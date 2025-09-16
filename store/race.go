@@ -3,16 +3,12 @@ package store
 import (
 	"context"
 	"database/sql"
-	"embed"
 	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/victorprocure/opendominiongo/helpers"
 )
-
-//go:embed data/races
-var racesFS embed.FS
 
 type Race struct {
 	Id                  int

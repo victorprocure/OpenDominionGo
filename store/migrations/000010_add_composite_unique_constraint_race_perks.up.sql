@@ -6,3 +6,6 @@ ALTER TABLE unit_perks
 
 ALTER TABLE units
     ADD CONSTRAINT race_id_slot_unique UNIQUE (race_id, slot);
+
+ALTER TABLE spell_perks
+    ADD CONSTRAINT spell_id_spell_perk_type_id_unique UNIQUE (spell_id, spell_perk_type_id);

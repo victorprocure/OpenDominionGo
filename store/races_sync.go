@@ -2,10 +2,9 @@ package store
 
 import (
 	"context"
-	"database/sql"
+	"embed"
 	"errors"
 	"io/fs"
-	"log/slog"
 	"sort"
 	"strconv"
 
@@ -13,64 +12,48 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func (s *Storage) PerformDataSync() error {
-	err := s.syncRaces()
-	if err != nil {
-		return err
-	}
+//go:embed data/races
+var racesFS embed.FS
 
-	return nil
+type RacesSync struct{ storage *Storage }
+
+func NewRacesSync(s *Storage) *RacesSync {
+	return &RacesSync{storage: s}
 }
 
-func (s *Storage) syncRaces() error {
+func (s *RacesSync) Name() string {
+	return "Races"
+}
+
+func (s *RacesSync) PerformDataSync(ctx context.Context, tx DbTx) error {
 	entries, err := fs.ReadDir(racesFS, "data/races")
 	if err != nil {
-		s.Log.Error("Unable to read data directory", slog.Any("error", err.Error()))
 		return err
 	}
-
-	ctx := context.Background()
-	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
-	if err != nil {
-		s.Log.Error("Error starting transaction: ", slog.Any("error", err))
-		return err
-	}
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-			return
-		}
-		err = tx.Commit()
-	}()
 
 	for _, e := range entries {
-		name, valid, err := helpers.IsValidYamlFileName(e)
+		name, valid, _ := helpers.IsValidYamlFileName(e)
 		if !valid {
-			s.Log.Warn("Skipping non-yaml file", slog.String("FileName", name), slog.Any("error", err))
 			continue
 		}
 
-		r, err := getRaceFromFile(name, s.Log)
+		r, err := getRaceFromFile(name)
 		if err != nil {
-			s.Log.Warn("Error occurred reading race from YAML", slog.String("FileName", name), slog.Any("error", err))
 			continue
 		}
 
 		err = s.syncRace(r, ctx, tx)
 		if err != nil {
-			s.Log.Warn("Error occurred syncing race", slog.String("FileName", name), slog.Any("error", err))
 			continue
 		}
 
 		err = s.syncRacePerks(name, r, ctx, tx)
 		if err != nil {
-			s.Log.Error("Error occurred syncing race perks", slog.String("FileName", name), slog.Any("error", err))
 			return err
 		}
 
 		err = s.syncRaceUnits(name, r, ctx, tx)
 		if err != nil {
-			s.Log.Error("Error occurred syncing race units", slog.Group("Error for race", slog.Any("Race", r), slog.Any("Error", err), slog.String("File Name", name)))
 			return err
 		}
 	}
@@ -78,7 +61,7 @@ func (s *Storage) syncRaces() error {
 	return nil
 }
 
-func (s *Storage) syncRaceUnits(fn string, r *Race, ctx context.Context, tx DbTx) error {
+func (s *RacesSync) syncRaceUnits(fn string, r *Race, ctx context.Context, tx DbTx) error {
 	units, err := getUnitsForRaceFromYaml(r, fn)
 	if err != nil {
 		return err
@@ -89,18 +72,18 @@ func (s *Storage) syncRaceUnits(fn string, r *Race, ctx context.Context, tx DbTx
 	}
 
 	for _, u := range units {
-		err = s.CreateOrUpdateUnitContext(u, ctx, tx)
+		err = s.storage.CreateOrUpdateUnitContext(u, ctx, tx)
 		if err != nil {
 			return err
 		}
 
 		for _, perkValue := range u.Perks {
-			err := s.CreateOrUpdateUnitPerkTypeContext(perkValue.UnitPerkType, ctx, tx)
+			err := s.storage.CreateOrUpdateUnitPerkTypeContext(perkValue.UnitPerkType, ctx, tx)
 			if err != nil {
 				return err
 			}
 
-			err = s.CreateOrUpdateUnitPerkContext(perkValue, ctx, tx)
+			err = s.storage.CreateOrUpdateUnitPerkContext(perkValue, ctx, tx)
 			if err != nil {
 				return err
 			}
@@ -110,8 +93,8 @@ func (s *Storage) syncRaceUnits(fn string, r *Race, ctx context.Context, tx DbTx
 	return nil
 }
 
-func (s *Storage) syncRace(r *Race, ctx context.Context, tx DbTx) error {
-	err := s.CreateOrUpdateRaceContext(r, ctx, tx)
+func (s *RacesSync) syncRace(r *Race, ctx context.Context, tx DbTx) error {
+	err := s.storage.CreateOrUpdateRaceContext(r, ctx, tx)
 	if err != nil {
 		return err
 	}
@@ -119,8 +102,8 @@ func (s *Storage) syncRace(r *Race, ctx context.Context, tx DbTx) error {
 	return nil
 }
 
-func (s *Storage) syncRacePerks(fn string, r *Race, ctx context.Context, tx DbTx) error {
-	perks, err := getPerksForRaceFromYaml(r, fn, s.Log)
+func (s *RacesSync) syncRacePerks(fn string, r *Race, ctx context.Context, tx DbTx) error {
+	perks, err := getPerksForRaceFromYaml(r, fn)
 	if err != nil {
 		return err
 	}
@@ -130,13 +113,13 @@ func (s *Storage) syncRacePerks(fn string, r *Race, ctx context.Context, tx DbTx
 	}
 
 	for _, p := range perks {
-		rpt, err := s.GetRacePerkTypeByKeyContext(p.RacePerkType.Key, ctx, tx)
+		rpt, err := s.storage.GetRacePerkTypeByKeyContext(p.RacePerkType.Key, ctx, tx)
 		if err != nil {
 			return err
 		}
 
 		if rpt == nil {
-			err = s.CreateOrUpdateRacePerkTypeContext(p.RacePerkType, ctx, tx)
+			err = s.storage.CreateOrUpdateRacePerkTypeContext(p.RacePerkType, ctx, tx)
 			if err != nil {
 				return err
 			}
@@ -144,7 +127,7 @@ func (s *Storage) syncRacePerks(fn string, r *Race, ctx context.Context, tx DbTx
 		}
 
 		p.RacePerkType = rpt
-		err = s.CreateOrUpdateRacePerkContext(&p, ctx, tx)
+		err = s.storage.CreateOrUpdateRacePerkContext(&p, ctx, tx)
 		if err != nil {
 			return err
 		}
@@ -207,9 +190,9 @@ func getUnitsForRaceFromYaml(r *Race, f string) ([]*Unit, error) {
 		perks := make([]*UnitPerk, 0, len(u.Perks))
 		for k, v := range u.Perks {
 			perk := &UnitPerk{
-				Unit: unit,
+				Unit:         unit,
 				UnitPerkType: &UnitPerkType{Key: k},
-				Value: v,
+				Value:        v,
 			}
 			perks = append(perks, perk)
 		}
@@ -220,7 +203,7 @@ func getUnitsForRaceFromYaml(r *Race, f string) ([]*Unit, error) {
 	return units, nil
 }
 
-func getPerksForRaceFromYaml(r *Race, f string, log *slog.Logger) ([]RacePerk, error) {
+func getPerksForRaceFromYaml(r *Race, f string) ([]RacePerk, error) {
 	rf, err := racesFS.ReadFile("data/races/" + f)
 	if err != nil {
 		return nil, err
@@ -259,7 +242,7 @@ func getPerksForRaceFromYaml(r *Race, f string, log *slog.Logger) ([]RacePerk, e
 	return perks, nil
 }
 
-func getRaceFromFile(n string, log *slog.Logger) (*Race, error) {
+func getRaceFromFile(n string) (*Race, error) {
 	b, err := racesFS.ReadFile("data/races/" + n)
 	if err != nil {
 		return nil, err

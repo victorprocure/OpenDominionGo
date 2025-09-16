@@ -2,11 +2,10 @@ package store
 
 import (
 	"database/sql"
-	"errors"
 	"log/slog"
 )
 
-var ErrorNotFound = errors.New("record not found")
+var ErrorNotFound = sql.ErrNoRows
 type Storage struct {
 	db *sql.DB
 	Log *slog.Logger

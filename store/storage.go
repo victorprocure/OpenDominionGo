@@ -12,6 +12,10 @@ type DbTx interface {
 	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
 
+type RowScanner interface {
+    Scan(dest ...any) error
+}
+
 func NewSqlStorage(connectionString string, log slog.Logger) (*sql.DB, error) {
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
@@ -20,6 +24,10 @@ func NewSqlStorage(connectionString string, log slog.Logger) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func (s *Storage) InitDataSync(syncers ...DataSync) *SyncCoordinator {
+	return NewSyncCoordinator(s, syncers...)
 }
 
 func (s *Storage) Ping() error {

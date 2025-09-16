@@ -183,3 +183,121 @@ type Dominion struct {
 	StatInciteChaosDamageReceived         int
 	StatSpiesCharmed                      int
 }
+
+type DominionHistory struct {
+	Id        int
+	Dominion  *Dominion
+	Event     string
+	Delta     string
+	CreatedAt time.Time
+	IP        string
+	Device    string
+}
+
+type DominionJournal struct {
+	Id        int
+	Dominion  *Dominion
+	Content   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type DominionQueue struct {
+	Dominion  *Dominion
+	Source    string
+	Resource  string
+	Hours     int
+	Amount    int
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type DominionSpell struct {
+	Dominion       *Dominion
+	Duration       int
+	CastByDominion *Dominion
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Spell          *Spell
+}
+
+type DominionTech struct {
+	Id        int
+	Dominion  *Dominion
+	Tech      *Tech
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type DominionTick struct {
+	Id                       int
+	Dominion                 *Dominion
+	Prestige                 int
+	Peasants                 int
+	Morale                   int
+	SpyStrength              float64
+	WizardStrength           float64
+	ResourcePlatinum         int
+	ResourceFood             int
+	ResourceFoodProduction   int
+	ResourceLumber           int
+	ResourceLumberProduction int
+	ResourceMana             int
+	ResourceManaProduction   int
+	ResourceOre              int
+	ResourceGems             int
+	ResourceTech             int
+	ResourceBoats            float64
+	MilitaryDraftees         int
+	MilitaryUnit1            int
+	MilitaryUnit2            int
+	MilitaryUnit3            int
+	MilitaryUnit4            int
+	MilitarySpies            int
+	MilitaryWizards          int
+	MilitaryArchmages        int
+	LandPlain                int
+	LandMountain             int
+	LandSwamp                int
+	LandCavern               int
+	LandForest               int
+	LandHill                 int
+	LandWater                int
+	DiscountedLand           int
+	BuildingHome             int
+	BuildingAlchemy          int
+	BuildingFarm             int
+	BuildingSmithy           int
+	BuildingMasonry          int
+	BuildingOreMine          int
+	BuildingGryphonNest      int
+	BuildingTower            int
+	BuildingWizardGuild      int
+	BuildingTemple           int
+	BuildingDiamondMine      int
+	BuildingSchool           int
+	BuildingLumberyard       int
+	BuildingForestHaven      int
+	BuildingFactory          int
+	BuildingGuardTower       int
+	BuildingShrine           int
+	BuildingBarracks         int
+	BuildingDock             int
+	StarvationCasualties     string
+	UpdatedAt                time.Time
+	HighestLandAchieved      int
+	CalculatedNetworth       int
+	ResourceFoodDecay        int
+	ResourceLumberDecay      int
+	ResourceManaDecay        int
+	ResourceBoatProduction   float64
+	ExpiringSpells           string
+	MilitaryAssassins        int
+	ImprovementScience       int
+	ImprovementKeep          int
+	ImprovementForges        int
+	ImprovementWalls         int
+	Resilience               int
+	FireballMeter            int
+	LightningBoltMeter       int
+}

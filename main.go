@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -25,10 +26,23 @@ func main() {
 	}
 	defer db.Close()
 
-	store := store.NewStore(db, log)
-	initStore(store, log)
+	s := store.NewStore(db, log)
+	initStore(s, log)
+	dataSync := initDataSync(s)
+	err = dataSync.RunDataSync(context.Background())
+	if err != nil {
+		log.Error("Unable to perform data sync", slog.Any("error", err))
+		os.Exit(1)
+	}
 
-	handler := handlers.New(store, log)
+	spells, err := s.GetSpellsByRaceKey("human")
+	if err != nil {
+		log.Error("Unable to get spells", slog.Any("error", err))
+		os.Exit(1)
+	}
+	log.Info("Here are all spells", slog.Any("spells", spells))
+
+	handler := handlers.New(s, log)
 	secureFlag := config.SecureFlag
 	sessionHandler := session.NewMiddleware(handler, session.WithSecure(secureFlag))
 
@@ -37,12 +51,6 @@ func main() {
 		Handler: sessionHandler,
 		ReadTimeout: time.Second * 10,
 		WriteTimeout: time.Second * 10,
-	}
-
-	err = store.PerformDataSync()
-	if err != nil {
-		log.Error("Unable to perform data sync", slog.Any("error", err))
-		os.Exit(1)
 	}
 
 	log.Info("Server is running", slog.Group("Config", slog.String("Server Address", server.Addr), slog.String("DB Address", config.DBAddress), slog.String("DB Name", config.DBName)))
@@ -57,4 +65,8 @@ func initStore(db *store.Storage, log *slog.Logger) {
 	}
 	
 	log.Debug("Database connection established")
+}
+
+func initDataSync(db *store.Storage) *store.SyncCoordinator {
+	return store.NewSyncCoordinator(db, store.NewRacesSync(db), store.NewSpellsSync(db))
 }

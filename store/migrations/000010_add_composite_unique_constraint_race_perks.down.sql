@@ -6,3 +6,6 @@ ALTER TABLE unit_perks
 
 ALTER TABLE units
     DELETE CONSTRAINT race_id_slot_unique;
+
+ALTER TABLE spell_perks
+    DELETE CONSTRAINT spell_id_spell_perk_type_id_unique

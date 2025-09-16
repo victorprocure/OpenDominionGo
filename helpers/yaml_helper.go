@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"errors"
 	"io/fs"
 	"path/filepath"
@@ -13,12 +14,41 @@ type BoolDefaultTrue struct {
 	v *bool
 }
 
+func NewBoolDefaultTrue(v bool) BoolDefaultTrue {
+    return BoolDefaultTrue{v: &v}
+}
+
+func (b BoolDefaultTrue) Bool() bool {
+	if b.v == nil {
+		return true
+	}
+
+	return *b.v;
+}
+
 func (b BoolDefaultTrue) OrDefault() bool {
 	if b.v == nil {
 		return true
 	}
 
 	return *b.v
+}
+
+func (b BoolDefaultTrue) MarshalJSON() ([]byte, error) {
+    return json.Marshal(b.OrDefault())
+}
+func (b *BoolDefaultTrue) UnmarshalJSON(data []byte) error {
+    // null => default true
+    if string(data) == "null" {
+        b.v = nil
+        return nil
+    }
+    var v bool
+    if err := json.Unmarshal(data, &v); err != nil {
+        return err
+    }
+    b.v = &v
+    return nil
 }
 
 func (b BoolDefaultTrue) MarshalYAML() (any, error) {
