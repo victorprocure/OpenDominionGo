@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -15,7 +16,7 @@ type BoolDefaultTrue struct {
 }
 
 func NewBoolDefaultTrue(v bool) BoolDefaultTrue {
-    return BoolDefaultTrue{v: &v}
+	return BoolDefaultTrue{v: &v}
 }
 
 func (b BoolDefaultTrue) Bool() bool {
@@ -23,7 +24,7 @@ func (b BoolDefaultTrue) Bool() bool {
 		return true
 	}
 
-	return *b.v;
+	return *b.v
 }
 
 func (b BoolDefaultTrue) OrDefault() bool {
@@ -35,20 +36,20 @@ func (b BoolDefaultTrue) OrDefault() bool {
 }
 
 func (b BoolDefaultTrue) MarshalJSON() ([]byte, error) {
-    return json.Marshal(b.OrDefault())
+	return json.Marshal(b.OrDefault())
 }
 func (b *BoolDefaultTrue) UnmarshalJSON(data []byte) error {
-    // null => default true
-    if string(data) == "null" {
-        b.v = nil
-        return nil
-    }
-    var v bool
-    if err := json.Unmarshal(data, &v); err != nil {
-        return err
-    }
-    b.v = &v
-    return nil
+	// null => default true
+	if string(data) == "null" {
+		b.v = nil
+		return nil
+	}
+	var v bool
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	b.v = &v
+	return nil
 }
 
 func (b BoolDefaultTrue) MarshalYAML() (any, error) {
@@ -57,7 +58,7 @@ func (b BoolDefaultTrue) MarshalYAML() (any, error) {
 
 func (b *BoolDefaultTrue) UnmarshalYAML(n *yaml.Node) error {
 	// if key is absent, this method won't be called and v stays nil (defaulting to true now)
-	if n == nil || n.Kind == 0{
+	if n == nil || n.Kind == 0 {
 		b.v = nil
 		return nil
 	}
@@ -69,6 +70,73 @@ func (b *BoolDefaultTrue) UnmarshalYAML(n *yaml.Node) error {
 
 	b.v = &v
 	return nil
+}
+
+type CommaDelimitedArray struct {
+	v []string
+}
+
+func NewCommaDelimitedArray(v []string) CommaDelimitedArray {
+	return CommaDelimitedArray{v: v}
+}
+
+func (c *CommaDelimitedArray) MarshalYAML() (any, error) {
+	if len(c.v) == 0 {
+		return []string{}, nil
+	}
+
+	return c.v, nil
+}
+
+func (c *CommaDelimitedArray) UnmarshalYAML(n *yaml.Node) error {
+	if n == nil || n.Kind == 0 {
+		c.v = []string{}
+		return nil
+	}
+
+	switch n.Kind {
+	case yaml.ScalarNode:
+		var s string
+		if err := n.Decode(&s); err != nil {
+			return err
+		}
+
+		s = strings.TrimSpace(s)
+		if s == "" {
+			c.v = []string{}
+			return nil
+		}
+
+		parts := strings.FieldsFunc(s, func(r rune) bool{
+			return r == ',' || r == ' ' || r == '\t' || r == '\n' || r == '\r'
+		})
+
+		c.v = parts
+		return nil
+
+	case yaml.SequenceNode:
+		out := make([]string, 0, len(n.Content))
+		for _, child := range n.Content {
+			var s string
+			if err := child.Decode(&s); err != nil {
+				return fmt.Errorf("requires: expected string items: %w", err)
+			}
+			s = strings.TrimSpace(s)
+			if s != "" {
+				out = append(out, s)
+			}
+		}
+		c.v = out
+		return nil
+
+	default:
+		return fmt.Errorf("requires: unsupported YAML node kind %v", n.Kind)
+	}
+
+}
+
+func (c *CommaDelimitedArray) ToString() string {
+	return strings.Join(c.v, ", ")
 }
 
 func IsValidYamlFileName(e fs.DirEntry) (fileName string, valid bool, err error) {

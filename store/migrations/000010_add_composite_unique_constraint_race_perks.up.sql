@@ -9,3 +9,6 @@ ALTER TABLE units
 
 ALTER TABLE spell_perks
     ADD CONSTRAINT spell_id_spell_perk_type_id_unique UNIQUE (spell_id, spell_perk_type_id);
+
+ALTER TABLE tech_perks
+    ADD CONSTRAINT tech_id_tech_perk_type_id_unique UNIQUE (tech_id, tech_perk_type_id);
