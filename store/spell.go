@@ -261,8 +261,8 @@ func getSpellFromJsonRow(scanner RowScanner) (*Spell, error) {
 	spell.Perks = make([]*SpellPerk, 0, len(perks))
 	for _, p := range perks {
 		spell.Perks = append(spell.Perks, &SpellPerk{
-			Id:        p.Id,
-			Spell:     &spell,
+			Id:    p.Id,
+			Spell: &spell,
 			SpellPerkType: &SpellPerkType{
 				Id:        p.PerkType.Id,
 				Key:       p.PerkType.Key,
