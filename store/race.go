@@ -225,7 +225,7 @@ func (s *Storage) CreateOrUpdateRacePerkTypeContext(rpt *RacePerkType, ctx conte
 		(key) 
 		VALUES ($1)
 		ON CONFLICT (key) DO UPDATE SET
-		  key = $1
+		  key = EXCLUDED.key
 		RETURNING id`,
 		rpt.Key,
 	).Scan(&rpt.Id)

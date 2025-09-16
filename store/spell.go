@@ -318,7 +318,7 @@ type SpellPerkType struct {
 func (s *Storage) CreateOrUpdateSpellPerkTypeContext(spt *SpellPerkType, ctx context.Context, db DbTx) error {
 	err := db.QueryRowContext(ctx, `
 		INSERT INTO spell_perk_types (key) VALUES ($1)
-		ON CONFLICT (key) DO UPDATE SET key = $1
+		ON CONFLICT (key) DO UPDATE SET key = EXCLUDED.key
 		RETURNING id`,
 		spt.Key,
 	).Scan(&spt.Id)

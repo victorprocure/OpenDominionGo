@@ -68,5 +68,9 @@ func initStore(db *store.Storage, log *slog.Logger) {
 }
 
 func initDataSync(db *store.Storage) *store.SyncCoordinator {
-	return store.NewSyncCoordinator(db, store.NewRacesSync(db), store.NewSpellsSync(db), store.NewTechSync(db))
+	return store.NewSyncCoordinator(db, 
+		store.NewRacesSync(db),
+		store.NewSpellsSync(db),
+		store.NewTechSync(db),
+		store.NewWondersSync(db))
 }

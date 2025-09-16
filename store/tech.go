@@ -85,7 +85,7 @@ func (s *Storage) CreateOrUpdateTechPerkTypeContext(t *TechPerkType, ctx context
 		INSERT INTO tech_perk_types (key)
 		VALUES ($1)
 		ON CONFLICT (key) DO UPDATE SET
-			key = $1
+			key = EXCLUDED.key
 		RETURNING id`,
 		t.Key,
 	).Scan(&t.Id)

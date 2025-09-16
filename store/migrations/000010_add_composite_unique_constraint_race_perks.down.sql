@@ -12,3 +12,6 @@ ALTER TABLE spell_perks
 
 ALTER TABLE tech_perks
     DELETE CONSTRAINT tech_id_tech_perk_type_id_unique
+
+ALTER TABLE wonder_perks
+    DELETE CONSTRAINT wonder_id_wonder_perk_type_id_unique

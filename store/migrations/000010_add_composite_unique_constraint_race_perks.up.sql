@@ -12,3 +12,6 @@ ALTER TABLE spell_perks
 
 ALTER TABLE tech_perks
     ADD CONSTRAINT tech_id_tech_perk_type_id_unique UNIQUE (tech_id, tech_perk_type_id);
+
+ALTER TABLE wonder_perks
+    ADD CONSTRAINT wonder_id_wonder_perk_type_id_unique UNIQUE (wonder_id, wonder_perk_type_id);
