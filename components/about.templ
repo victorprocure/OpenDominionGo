@@ -1,0 +1,59 @@
+package components
+
+templ About() {
+@Page(PageOpts{ShowNav: true, Title: "About"}) {
+@InfoHeader("About the Program") {
+OpenDominion is a free and open source remake of Dominion from Kamikaze Games, which ran from 2000 to 2012
+before stopping indefinitely.
+@HorizontalSerparator()
+<h3 class="text-xl font-semibold">Vision Statement</h3>
+
+<ul class="list-disc list-inside md:indent-8 mt-1">
+    <li>Always free, always open source.</li>
+    <li>Remain true to the spirit of the original game while improving player experience.</li>
+    <li>Support and encourage a variety of playstyles.</li>
+    <li>Grow the playerbase.</li>
+</ul>
+
+<h3 class="text-xl pt-2 font-semibold">Gameplay Committee</h3>
+<p class="mb-2">
+    The GPC is a group of players elected by their peers to make informed and thoughtful decisions about game
+    balance, which can then be implemented at the administrators' discretion. Members are tasked with
+    communicating
+    to the playerbase what changes have been proposed, gathering feedback, and finalizing changes for each round
+    based on relative consensus within the community.
+</p>
+
+<p>
+    New members are voted on by the community every few rounds as time and interest allows. The administrators
+    may
+    occasionally appoint new members, but appointed membership should never hold a majority. Members should
+    treat
+    the community and each other with respect, or face removal by the administrators.
+</p>
+
+<h3 class="text-xl pt-2 font-semibold">Game Balance</h3>
+<p>
+    The primary objective of the game is to gain land. This can be done by attacking, exploring, or a
+    combination of
+    the two (converting).
+</p>
+Balance changes should meet at least one of these criteria:
+<ul class="list-disc list-inside md:indent-8 mt-1">
+    <li>Better balances the aforementioned three basic playstyles, so that each is viable to win a round (though
+        individuals may disagree about the likelihood of each).</li>
+    <li>Adjusts the power level of individual races/mechanics/strategies to maximize strategic diversity.</li>
+    <li>Discourages abusive behavior that would violate the rules or harm player retention.</li>
+    <li>Reduces the learning curve for new players.</li>
+    <li>Keeps the game fresh for existing players by shaking things up on occasion.</li>
+</ul>
+<p>
+    Proposals for a change can be presented by any player. A proposal should, at minimum, clearly explain the
+    reasoning for the change. If possible, it should also show how it affects other aspects of the game and/or
+    present charts or other visual reference so that the outcome can be more easily understood. Relevant game
+    data from previous rounds can be requested from the admins. Proposals requiring non-trivial dev work should be
+    presented well before the end of the current round or they may not be considered for the following round.
+</p>
+}
+}
+}

@@ -1,0 +1,15 @@
+package components
+
+templ HorizontalSerparator(){
+<div class="flex w-full my-8 items-center">
+    <hr class="dark:border-gray-400 border-gray-800 opacity-50 flex-grow" />
+</div>
+}
+
+templ HorizontalSerparatorCenteredLabel(label string){
+<div class="flex w-full my-8 items-center text-gray-800 dark:text-gray-400">
+    <hr class="dark:border-gray-400 border-gray-800 opacity-50 flex-grow" />
+    <div class="font-semibold text-xl px-4">{label}</div>
+    <hr class="dark:border-gray-400 border-gray-800 opacity-50 flex-grow" />
+</div>
+}

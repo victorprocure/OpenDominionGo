@@ -1,0 +1,9 @@
+*_templ.txt
+.envrc
+.env*
+!.env
+bin
+*_templ.go*
+tmp
+.vscode
+node_modules
