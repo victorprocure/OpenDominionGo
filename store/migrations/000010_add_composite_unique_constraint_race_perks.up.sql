@@ -15,3 +15,6 @@ ALTER TABLE tech_perks
 
 ALTER TABLE wonder_perks
     ADD CONSTRAINT wonder_id_wonder_perk_type_id_unique UNIQUE (wonder_id, wonder_perk_type_id);
+
+ALTER TABLE hero_upgrade_perks
+    DROP CONSTRAINT IF EXISTS hero_upgrade_perks_key_unique

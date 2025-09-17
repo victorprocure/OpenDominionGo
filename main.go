@@ -72,5 +72,7 @@ func initDataSync(db *store.Storage) *store.SyncCoordinator {
 		store.NewRacesSync(db),
 		store.NewSpellsSync(db),
 		store.NewTechSync(db),
-		store.NewWondersSync(db))
+		store.NewWondersSync(db),
+		store.NewHeroUpgradeSync(db),
+	)
 }
