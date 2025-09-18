@@ -15,6 +15,10 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Cache Go build
         uses: actions/cache@v4
         with:
@@ -24,6 +28,12 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Build CSS assets
+        run: npm run build
+      - name: Generate code (templ)
+        run: go generate ./...
       - name: Build
         run: go build ./...
       - name: Test

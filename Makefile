@@ -1,4 +1,4 @@
-.PHONY: build-local build templ notify-templ-proxy tailwind test run
+.PHONY: build-local build templ notify-templ-proxy tailwind test run air-build
 
 -include .env
 -include .env.local
