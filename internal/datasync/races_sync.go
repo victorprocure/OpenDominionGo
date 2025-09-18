@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"embed"
+	"encoding/json"
+	"fmt"
 	"io/fs"
 	"log/slog"
 
@@ -20,10 +22,13 @@ const racesDir = "import_data/races"
 //go:embed import_data/races
 var racesFS embed.FS
 
-type RacesSync struct{ db *races.RacesRepo }
+type RacesSync struct {
+	db  *races.RacesRepo
+	log *slog.Logger
+}
 
 func NewRacesSync(db *sql.DB, log *slog.Logger) *RacesSync {
-	return &RacesSync{db: races.NewRacesRepository(db, log)}
+	return &RacesSync{db: races.NewRacesRepository(db, log), log: log}
 }
 
 func (s *RacesSync) Name() string {
@@ -44,12 +49,14 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 
 		r, err := getRaceFromFile(name)
 		if err != nil {
-			continue
+			return fmt.Errorf("read race file %s: %w", name, err)
 		}
 
-		err = s.syncRace(r, ctx, tx)
-		if err != nil {
-			continue
+		// Log the race key we're about to upsert for visibility
+		s.log.Info("upserting race", slog.String("file", name), slog.String("race_key", r.Key))
+
+		if err := s.syncRace(r, ctx, tx); err != nil {
+			return fmt.Errorf("sync race %s: %w", r.Key, err)
 		}
 	}
 
@@ -63,8 +70,10 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 		perks[kv.Key] = kv.Value
 	}
 	units := make([]races.UnitUpsertArg, 0, len(r.Units))
-	for _, u := range r.Units {
+	for i, u := range r.Units {
+		position := i + 1
 		units = append(units, races.UnitUpsertArg{
+			Slot:         fmt.Sprintf("%d", position),
 			Name:         u.Name,
 			Type:         u.Type,
 			NeedBoat:     u.NeedBoat,
@@ -83,6 +92,14 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 	if r.Description != nil {
 		desc = *r.Description
 	}
+	// Marshal and log the serialized perks/units that will be passed to SQL
+	if b, err := json.Marshal(perks); err == nil {
+		s.log.Info("race perks json", slog.String("race", r.Key), slog.String("perks", string(b)))
+	}
+	if b, err := json.Marshal(units); err == nil {
+		s.log.Info("race units json", slog.String("race", r.Key), slog.String("units", string(b)))
+	}
+
 	_, err := s.db.UpsertRaceFromSyncContext(ctx, tx, races.RaceUpsertArgs{
 		Key:                 r.Key,
 		Name:                r.Name,

@@ -182,24 +182,24 @@ type Dominion struct {
 }
 
 type DominionHistory struct {
-	Dominion  *Dominion
-	Event     string
-	Delta     string
-	IP        string
-	Device    string
+	Dominion *Dominion
+	Event    string
+	Delta    string
+	IP       string
+	Device   string
 }
 
 type DominionJournal struct {
-	Dominion  *Dominion
-	Content   string
+	Dominion *Dominion
+	Content  string
 }
 
 type DominionQueue struct {
-	Dominion  *Dominion
-	Source    string
-	Resource  string
-	Hours     int
-	Amount    int
+	Dominion *Dominion
+	Source   string
+	Resource string
+	Hours    int
+	Amount   int
 }
 
 type DominionSpell struct {

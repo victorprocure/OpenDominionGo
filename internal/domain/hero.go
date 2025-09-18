@@ -10,12 +10,10 @@ type Hero struct {
 	StatCombatLosses int
 	StatCombatDraws  int
 	CombatRating     int
-	HeroUpgrades    []HeroHeroUpgrade
+	HeroUpgrades     []HeroHeroUpgrade
 }
 
 type HeroHeroUpgrade struct {
 	Hero        *Hero
 	HeroUpgrade *HeroUpgrade
 }
-
-

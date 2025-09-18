@@ -41,6 +41,7 @@ func main() {
 
 	// Run data syncs at startup
 	coord := datasync.NewSyncCoordinator(sqldb, log)
+
 	syncCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	if err := coord.RunAll(syncCtx,

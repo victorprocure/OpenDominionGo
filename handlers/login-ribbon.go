@@ -7,5 +7,5 @@ import (
 )
 
 func (h *Handler) HandleLoginRibbon(w http.ResponseWriter, r *http.Request) {
-	components.LoginRibbon(components.LoginRibbonOpts{ LoggedIn: false }).Render(r.Context(), w)
+	components.LoginRibbon(components.LoginRibbonOpts{LoggedIn: false}).Render(r.Context(), w)
 }

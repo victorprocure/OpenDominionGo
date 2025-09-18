@@ -1,0 +1,1 @@
+ALTER TABLE units DROP CONSTRAINT IF EXISTS units_race_id_name_unique;

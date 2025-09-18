@@ -8,15 +8,15 @@ import (
 
 type MiddlewareOpts func(*Middleware)
 type Middleware struct {
-	Next http.Handler
-	Secure bool
+	Next     http.Handler
+	Secure   bool
 	HTTPOnly bool
 }
 
 func NewMiddleware(next http.Handler, opts ...MiddlewareOpts) http.Handler {
 	mw := Middleware{
-		Next: next,
-		Secure: true,
+		Next:     next,
+		Secure:   true,
 		HTTPOnly: true,
 	}
 
@@ -24,17 +24,17 @@ func NewMiddleware(next http.Handler, opts ...MiddlewareOpts) http.Handler {
 		opt(&mw)
 	}
 
-	return mw;
+	return mw
 }
 
 func WithSecure(secure bool) MiddlewareOpts {
-	return func(m *Middleware){
+	return func(m *Middleware) {
 		m.Secure = secure
 	}
 }
 
 func WithHTTPOnly(httpOnly bool) MiddlewareOpts {
-	return func(m *Middleware){
+	return func(m *Middleware) {
 		m.HTTPOnly = httpOnly
 	}
 }

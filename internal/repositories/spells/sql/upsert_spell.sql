@@ -11,21 +11,24 @@ WITH upsert_spell AS (
 input_perks AS (
   SELECT us.id AS spell_id, p.key, p.value
   FROM upsert_spell us
-  CROSS JOIN LATERAL 
-    jsonb_to_recordset(COALESCE($10::jsonb, '[]'::jsonb)) AS p(key text, value text)
+  -- jsonb_to_recordset returns record; provide a column definition list so Postgres
+  -- knows the names and types of the returned columns.
+  CROSS JOIN LATERAL jsonb_to_recordset(COALESCE($10::jsonb, '[]'::jsonb)) AS p(key text, value text)
 ),
 upsert_types AS (
+  -- Insert any new spell perk types; do nothing on conflict
   INSERT INTO spell_perk_types (key)
   SELECT DISTINCT ip.key FROM input_perks ip
-  ON CONFLICT (key) DO UPDATE SET key = EXCLUDED.key
+  ON CONFLICT (key) DO NOTHING
   RETURNING id, key
 ),
 all_types AS (
+  -- Combine newly inserted types with existing types for the input keys
   SELECT id, key FROM upsert_types
-  UNION ALL
+  UNION
   SELECT spt.id, spt.key
   FROM spell_perk_types spt
-  JOIN input_perks ip ON ip.key = spt.key
+  WHERE spt.key IN (SELECT DISTINCT key FROM input_perks)
 ),
 upsert_perks AS (
   INSERT INTO spell_perks (spell_id, spell_perk_type_id, value)

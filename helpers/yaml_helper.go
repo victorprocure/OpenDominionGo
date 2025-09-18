@@ -107,7 +107,7 @@ func (c *CommaDelimitedArray) UnmarshalYAML(n *yaml.Node) error {
 			return nil
 		}
 
-		parts := strings.FieldsFunc(s, func(r rune) bool{
+		parts := strings.FieldsFunc(s, func(r rune) bool {
 			return r == ',' || r == ' ' || r == '\t' || r == '\n' || r == '\r'
 		})
 

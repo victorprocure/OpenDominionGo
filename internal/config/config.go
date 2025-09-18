@@ -1,8 +1,8 @@
 package config
 
 import (
-	"maps"
 	"fmt"
+	"maps"
 	"os"
 	"strconv"
 	"strings"

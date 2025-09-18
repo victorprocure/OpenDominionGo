@@ -65,111 +65,111 @@ func (pl KeyValues) MarshalYAML() (any, error) {
 }
 
 func (pl *KeyValues) UnmarshalJSON(b []byte) error {
-    // Trim to detect empty/null
-    bt := bytes.TrimSpace(b)
-    if len(bt) == 0 || string(bt) == "null" {
-        *pl = nil
-        return nil
-    }
+	// Trim to detect empty/null
+	bt := bytes.TrimSpace(b)
+	if len(bt) == 0 || string(bt) == "null" {
+		*pl = nil
+		return nil
+	}
 
-    switch bt[0] {
-    case '{':
-        // Preserve key order using a Decoder
-        dec := json.NewDecoder(bytes.NewReader(bt))
-        t, err := dec.Token()
-        if err != nil || t != json.Delim('{') {
-            return fmt.Errorf("perks: invalid JSON object")
-        }
-        out := make([]KeyValue, 0, 8)
-        for dec.More() {
-            // Next token must be a key (string)
-            tk, err := dec.Token()
-            if err != nil {
-                return fmt.Errorf("perks: read key: %w", err)
-            }
-            key, ok := tk.(string)
-            if !ok {
-                return fmt.Errorf("perks: object key must be string")
-            }
-            // Read the value into RawMessage
-            var rm json.RawMessage
-            if err := dec.Decode(&rm); err != nil {
-                return fmt.Errorf("perks[%s]: decode value: %w", key, err)
-            }
-            val, err := jsonValueToString(rm)
-            if err != nil {
-                return fmt.Errorf("perks[%s]: %w", key, err)
-            }
-            out = append(out, KeyValue{Key: key, Value: val})
-        }
-        // Consume closing '}'
-        if t, err = dec.Token(); err != nil || t != json.Delim('}') {
-            return fmt.Errorf("perks: invalid JSON object end")
-        }
-        *pl = out
-        return nil
+	switch bt[0] {
+	case '{':
+		// Preserve key order using a Decoder
+		dec := json.NewDecoder(bytes.NewReader(bt))
+		t, err := dec.Token()
+		if err != nil || t != json.Delim('{') {
+			return fmt.Errorf("perks: invalid JSON object")
+		}
+		out := make([]KeyValue, 0, 8)
+		for dec.More() {
+			// Next token must be a key (string)
+			tk, err := dec.Token()
+			if err != nil {
+				return fmt.Errorf("perks: read key: %w", err)
+			}
+			key, ok := tk.(string)
+			if !ok {
+				return fmt.Errorf("perks: object key must be string")
+			}
+			// Read the value into RawMessage
+			var rm json.RawMessage
+			if err := dec.Decode(&rm); err != nil {
+				return fmt.Errorf("perks[%s]: decode value: %w", key, err)
+			}
+			val, err := jsonValueToString(rm)
+			if err != nil {
+				return fmt.Errorf("perks[%s]: %w", key, err)
+			}
+			out = append(out, KeyValue{Key: key, Value: val})
+		}
+		// Consume closing '}'
+		if t, err = dec.Token(); err != nil || t != json.Delim('}') {
+			return fmt.Errorf("perks: invalid JSON object end")
+		}
+		*pl = out
+		return nil
 
-    case '[':
-        var seq []KeyValue
-        if err := json.Unmarshal(bt, &seq); err != nil {
-            return fmt.Errorf("perks: decode array: %w", err)
-        }
-        *pl = seq
-        return nil
+	case '[':
+		var seq []KeyValue
+		if err := json.Unmarshal(bt, &seq); err != nil {
+			return fmt.Errorf("perks: decode array: %w", err)
+		}
+		*pl = seq
+		return nil
 
-    default:
-        return fmt.Errorf("perks: unsupported JSON (must be object or array)")
-    }
+	default:
+		return fmt.Errorf("perks: unsupported JSON (must be object or array)")
+	}
 }
 
 // MarshalJSON emits an object mapping, preserving the slice order.
 func (pl KeyValues) MarshalJSON() ([]byte, error) {
-    var buf bytes.Buffer
-    buf.WriteByte('{')
-    for i, kv := range pl {
-        if i > 0 {
-            buf.WriteByte(',')
-        }
-        kb, err := json.Marshal(kv.Key)
-        if err != nil {
-            return nil, fmt.Errorf("perks: marshal key: %w", err)
-        }
-        vb, err := json.Marshal(kv.Value)
-        if err != nil {
-            return nil, fmt.Errorf("perks: marshal value: %w", err)
-        }
-        buf.Write(kb)
-        buf.WriteByte(':')
-        buf.Write(vb)
-    }
-    buf.WriteByte('}')
-    return buf.Bytes(), nil
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, kv := range pl {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		kb, err := json.Marshal(kv.Key)
+		if err != nil {
+			return nil, fmt.Errorf("perks: marshal key: %w", err)
+		}
+		vb, err := json.Marshal(kv.Value)
+		if err != nil {
+			return nil, fmt.Errorf("perks: marshal value: %w", err)
+		}
+		buf.Write(kb)
+		buf.WriteByte(':')
+		buf.Write(vb)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
 }
 
 // jsonValueToString converts a JSON scalar (string/number/bool/null) to string.
 func jsonValueToString(rm json.RawMessage) (string, error) {
-    // string
-    var s string
-    if err := json.Unmarshal(rm, &s); err == nil {
-        return s, nil
-    }
-    // number
-    var f float64
-    if err := json.Unmarshal(rm, &f); err == nil {
-        // trim trailing .0
-        return strings.TrimRight(strings.TrimRight(strconv.FormatFloat(f, 'f', -1, 64), "0"), "."), nil
-    }
-    // bool
-    var b bool
-    if err := json.Unmarshal(rm, &b); err == nil {
-        if b {
-            return "true", nil
-        }
-        return "false", nil
-    }
-    // null
-    if bytes.Equal(bytes.TrimSpace(rm), []byte("null")) {
-        return "", nil
-    }
-    return "", fmt.Errorf("unsupported JSON value")
+	// string
+	var s string
+	if err := json.Unmarshal(rm, &s); err == nil {
+		return s, nil
+	}
+	// number
+	var f float64
+	if err := json.Unmarshal(rm, &f); err == nil {
+		// trim trailing .0
+		return strings.TrimRight(strings.TrimRight(strconv.FormatFloat(f, 'f', -1, 64), "0"), "."), nil
+	}
+	// bool
+	var b bool
+	if err := json.Unmarshal(rm, &b); err == nil {
+		if b {
+			return "true", nil
+		}
+		return "false", nil
+	}
+	// null
+	if bytes.Equal(bytes.TrimSpace(rm), []byte("null")) {
+		return "", nil
+	}
+	return "", fmt.Errorf("unsupported JSON value")
 }

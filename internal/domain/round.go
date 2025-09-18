@@ -25,10 +25,10 @@ type RoundLeague struct {
 }
 
 type RoundWonder struct {
-	Round     *Round
-	Realm     *Realm
-	Wonder    *Wonder
-	Power     int
+	Round  *Round
+	Realm  *Realm
+	Wonder *Wonder
+	Power  int
 }
 
 type RoundWonderDamage struct {

@@ -85,7 +85,17 @@ type SpellUpsertArgs struct {
 func (r *SpellsRepo) UpsertSpellFromSyncContext(ctx context.Context, tx repositories.DbTx, a SpellUpsertArgs) error {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
-		b, err := json.Marshal(a.Perks)
+		// Marshal perks as an array of {key, value} objects so the SQL
+		// jsonb_to_recordset(...) call can consume it as a recordset.
+		type kv struct {
+			Key   string `json:"key"`
+			Value string `json:"value"`
+		}
+		arr := make([]kv, 0, len(a.Perks))
+		for k, v := range a.Perks {
+			arr = append(arr, kv{Key: k, Value: v})
+		}
+		b, err := json.Marshal(arr)
 		if err != nil {
 			return fmt.Errorf("unable to marshal perks: %w", err)
 		}
@@ -93,11 +103,16 @@ func (r *SpellsRepo) UpsertSpellFromSyncContext(ctx context.Context, tx reposito
 	}
 
 	var id int
+	// Log the input JSON for debugging if available
+	if r.log != nil {
+		r.log.Info("upsert spell input", "key", a.Key, "perksJSON", string(perksJSON))
+	}
+
 	if err := tx.QueryRowContext(ctx, upsertSpellSQL,
 		a.Key, a.Name, a.Category, a.ManaCost, a.StrengthCost,
 		a.Duration, a.Cooldown, a.Active, pq.Array(a.Races), perksJSON,
 	).Scan(&id); err != nil {
-		return fmt.Errorf("unable to prepare upsert spell statement: %w", err)
+		return fmt.Errorf("unable to prepare upsert spell statement for key %s: %w", a.Key, err)
 	}
 
 	return nil

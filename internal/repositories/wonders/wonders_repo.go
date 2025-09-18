@@ -35,11 +35,21 @@ type WonderUpsertArgs struct {
 func (r *WondersRepo) UpsertWonderFromSyncContext(ctx context.Context, tx repositories.DbTx, a WonderUpsertArgs) error {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
-		b, err := json.Marshal(a.Perks)
+		// Marshal as an array of {key, value} objects so jsonb_to_recordset can consume it
+		type kv struct {
+			Key   string `json:"key"`
+			Value string `json:"value"`
+		}
+		arr := make([]kv, 0, len(a.Perks))
+		for k, v := range a.Perks {
+			arr = append(arr, kv{Key: k, Value: v})
+		}
+		b, err := json.Marshal(arr)
 		if err != nil {
 			return fmt.Errorf("marshal wonder perks: %w", err)
 		}
 		perksJSON = b
+		r.log.Info("upsert wonder input", "key", a.Key, "perksJSON", string(perksJSON))
 	}
 
 	var newId int

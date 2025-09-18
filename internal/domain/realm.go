@@ -23,10 +23,10 @@ type Realm struct {
 }
 
 type RealHistory struct {
-	Realm     *Realm
-	Dominion  *Dominion
-	Event     string
-	Delta     string
+	Realm    *Realm
+	Dominion *Dominion
+	Event    string
+	Delta    string
 }
 
 type RealmWar struct {

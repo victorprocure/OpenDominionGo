@@ -37,9 +37,10 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 	}
 
 	for _, spell := range spells {
-		err := s.syncSpell(&spell, ctx, tx)
-		if err != nil {
-			continue
+		if err := s.syncSpell(&spell, ctx, tx); err != nil {
+			// Stop on first error so we surface the underlying DB error
+			// (Postgres marks the transaction as failed after the first error).
+			return err
 		}
 	}
 

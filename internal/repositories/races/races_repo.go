@@ -24,6 +24,7 @@ func NewRacesRepository(db *sql.DB, log *slog.Logger) *RacesRepo {
 }
 
 type UnitUpsertArg struct {
+	Slot         string            `json:"slot"`
 	Name         string            `json:"name"`
 	Type         string            `json:"type"`
 	NeedBoat     bool              `json:"need_boat"`
@@ -72,6 +73,18 @@ func (r *RacesRepo) UpsertRaceFromSyncContext(ctx context.Context, tx repositori
 			return 0, fmt.Errorf("marshal units: %w", err)
 		}
 		usJSON = b
+	}
+
+	// Log the serialized JSON blobs we will pass to the SQL for easier debugging
+	if rpJSON != nil {
+		r.log.Info("race upsert rpJSON", slog.String("key", a.Key), slog.String("rpJSON", string(rpJSON)))
+	} else {
+		r.log.Info("race upsert rpJSON", slog.String("key", a.Key), slog.String("rpJSON", "null"))
+	}
+	if usJSON != nil {
+		r.log.Info("race upsert usJSON", slog.String("key", a.Key), slog.String("usJSON", string(usJSON)))
+	} else {
+		r.log.Info("race upsert usJSON", slog.String("key", a.Key), slog.String("usJSON", "null"))
 	}
 
 	var raceID int

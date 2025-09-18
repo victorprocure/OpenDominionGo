@@ -12,13 +12,13 @@ type RaceYaml struct {
 	ConverterDifficulty int                     `yaml:"converter_difficulty" json:"converter_difficulty"`
 	OverallDifficulty   int                     `yaml:"overall_difficulty" json:"overall_difficulty"`
 	HomeLandType        string                  `yaml:"home_land_type" json:"home_land_type"`
-	Perks               KeyValues             `yaml:"perks,omitempty" json:"perks,omitempty"`
+	Perks               KeyValues               `yaml:"perks,omitempty" json:"perks,omitempty"`
 	Playable            helpers.BoolDefaultTrue `yaml:"playable" json:"playable"`
 	Units               []struct {
-		Name     string      `yaml:"name" json:"name"`
+		Name     string    `yaml:"name" json:"name"`
 		Perks    KeyValues `yaml:"perks,omitempty" json:"perks,omitempty"`
-		NeedBoat bool        `yaml:"need_boat,omitempty" json:"need_boat,omitempty"`
-		Type     string      `yaml:"type" json:"type"`
+		NeedBoat bool      `yaml:"need_boat,omitempty" json:"need_boat,omitempty"`
+		Type     string    `yaml:"type" json:"type"`
 		Cost     struct {
 			Platinum int `yaml:"platinum,omitempty" json:"platinum,omitempty"`
 			Ore      int `yaml:"ore,omitempty" json:"ore,omitempty"`

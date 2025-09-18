@@ -14,17 +14,19 @@ input_perks AS (
   CROSS JOIN LATERAL jsonb_to_recordset(COALESCE($5::jsonb, '[]'::jsonb)) AS p(key text, value text)
 ),
 upsert_types AS (
+  -- Insert any new wonder perk types; do nothing on conflict
   INSERT INTO wonder_perk_types (key)
   SELECT DISTINCT key FROM input_perks
-  ON CONFLICT (key) DO UPDATE SET key = EXCLUDED.key
+  ON CONFLICT (key) DO NOTHING
   RETURNING id, key
 ),
 all_types AS (
+  -- Combine newly inserted types with existing types for the input keys
   SELECT id, key FROM upsert_types
-  UNION ALL
+  UNION
   SELECT wpt.id, wpt.key
   FROM wonder_perk_types wpt
-  JOIN input_perks ip ON ip.key = wpt.key
+  WHERE wpt.key IN (SELECT DISTINCT key FROM input_perks)
 ),
 upsert_perks AS (
   INSERT INTO wonder_perks (wonder_id, wonder_perk_type_id, value)
