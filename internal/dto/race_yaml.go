@@ -3,16 +3,16 @@ package dto
 import "github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
 
 type RaceYaml struct {
-	Key                 string                  `yaml:"key" json:"key"`
-	Name                string                  `yaml:"name" json:"name"`
-	Alignment           string                  `yaml:"alignment" json:"alignment"`
-	Description         *string                 `yaml:"description,omitempty" json:"description,omitempty"`
-	AttackerDifficulty  int                     `yaml:"attacker_difficulty" json:"attacker_difficulty"`
-	ExplorerDifficulty  int                     `yaml:"explorer_difficulty" json:"explorer_difficulty"`
-	ConverterDifficulty int                     `yaml:"converter_difficulty" json:"converter_difficulty"`
-	OverallDifficulty   int                     `yaml:"overall_difficulty" json:"overall_difficulty"`
-	HomeLandType        string                  `yaml:"home_land_type" json:"home_land_type"`
-	Perks               KeyValues               `yaml:"perks,omitempty" json:"perks,omitempty"`
+	Key                 string                   `yaml:"key" json:"key"`
+	Name                string                   `yaml:"name" json:"name"`
+	Alignment           string                   `yaml:"alignment" json:"alignment"`
+	Description         *string                  `yaml:"description,omitempty" json:"description,omitempty"`
+	AttackerDifficulty  int                      `yaml:"attacker_difficulty" json:"attacker_difficulty"`
+	ExplorerDifficulty  int                      `yaml:"explorer_difficulty" json:"explorer_difficulty"`
+	ConverterDifficulty int                      `yaml:"converter_difficulty" json:"converter_difficulty"`
+	OverallDifficulty   int                      `yaml:"overall_difficulty" json:"overall_difficulty"`
+	HomeLandType        string                   `yaml:"home_land_type" json:"home_land_type"`
+	Perks               KeyValues                `yaml:"perks,omitempty" json:"perks,omitempty"`
 	Playable            yamlutil.DefaultTrueBool `yaml:"playable" json:"playable"`
 	Units               []struct {
 		Name     string    `yaml:"name" json:"name"`

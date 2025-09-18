@@ -26,7 +26,7 @@ type UserAchievement struct {
 
 type UserActivity struct {
 	User    *User
-	Ip      string
+	IP      string
 	Context string
 	Status  string
 	Device  string

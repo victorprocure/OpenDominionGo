@@ -39,7 +39,7 @@ func (s *WondersSync) PerformDataSync(ctx context.Context, tx repositories.DbTx)
 		return fmt.Errorf("no wonders to add: %v", w)
 	}
 
-	err = s.syncWonders(w, ctx, tx)
+	err = s.syncWonders(ctx, tx, w)
 	if err != nil {
 		return fmt.Errorf("unable to sync wonders: %w", err)
 	}
@@ -47,7 +47,7 @@ func (s *WondersSync) PerformDataSync(ctx context.Context, tx repositories.DbTx)
 	return nil
 }
 
-func (s *WondersSync) syncWonders(wl []dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
+func (s *WondersSync) syncWonders(ctx context.Context, tx repositories.DbTx, wl []dto.WondersYaml) error {
 	for _, w := range wl {
 		perks := helpers.PerksToMap(w.Perks)
 		err := s.db.UpsertFromSyncContext(ctx, tx, wonders.UpsertArgs{

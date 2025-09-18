@@ -50,7 +50,7 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 		// Log the race key we're about to upsert for visibility
 		s.log.Info("upserting race", slog.String("file", fn), slog.String("race_key", r.Key))
 
-		if err := s.syncRace(r, ctx, tx); err != nil {
+		if err := s.syncRace(ctx, tx, r); err != nil {
 			return fmt.Errorf("sync race %s: %w", r.Key, err)
 		}
 	}
@@ -58,7 +58,7 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 	return nil
 }
 
-func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) error {
+func (s *RacesSync) syncRace(ctx context.Context, tx repositories.DbTx, r *dto.RaceYaml) error {
 	// map DTO -> repo wrapper
 	perks := helpers.PerksToMap(r.Perks)
 	units := make([]races.UnitUpsertArg, 0, len(r.Units))
