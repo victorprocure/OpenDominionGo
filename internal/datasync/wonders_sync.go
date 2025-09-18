@@ -8,6 +8,7 @@ import (
 	"log/slog"
 
 	"github.com/victorprocure/opendominiongo/internal/dto"
+	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/wonders"
 	"gopkg.in/yaml.v3"
@@ -48,11 +49,7 @@ func (s *WondersSync) PerformDataSync(ctx context.Context, tx repositories.DbTx)
 
 func (s *WondersSync) syncWonders(wl []dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
 	for _, w := range wl {
-		// map DTO -> repo args (convert KeyValues to map)
-		perks := make(map[string]string, len(w.Perks))
-		for _, kv := range w.Perks {
-			perks[kv.Key] = kv.Value
-		}
+		perks := helpers.PerksToMap(w.Perks)
 		err := s.db.UpsertWonderFromSyncContext(ctx, tx, wonders.WonderUpsertArgs{
 			Key:    w.Key,
 			Name:   w.Name,

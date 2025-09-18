@@ -10,6 +10,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/victorprocure/opendominiongo/internal/domain"
+	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
@@ -85,21 +86,11 @@ type SpellUpsertArgs struct {
 func (r *SpellsRepo) UpsertSpellFromSyncContext(ctx context.Context, tx repositories.DbTx, a SpellUpsertArgs) error {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
-		// Marshal perks as an array of {key, value} objects so the SQL
-		// jsonb_to_recordset(...) call can consume it as a recordset.
-		type kv struct {
-			Key   string `json:"key"`
-			Value string `json:"value"`
-		}
-		arr := make([]kv, 0, len(a.Perks))
-		for k, v := range a.Perks {
-			arr = append(arr, kv{Key: k, Value: v})
-		}
-		b, err := json.Marshal(arr)
+		var err error
+		perksJSON, err = helpers.MarshalPerksAsJSONArrayFromMap(a.Perks)
 		if err != nil {
 			return fmt.Errorf("unable to marshal perks: %w", err)
 		}
-		perksJSON = b
 	}
 
 	var id int

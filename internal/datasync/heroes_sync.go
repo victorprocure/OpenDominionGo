@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/victorprocure/opendominiongo/internal/dto"
+	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/heroes"
 	"gopkg.in/yaml.v3"
@@ -43,10 +44,7 @@ func (s *HeroesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 		// Build normalized repo args
 		classes := h.Classes.ToString()
 		// Convert perks from dto.KeyValues to map[string]string at sync boundary
-		perks := make(map[string]string, len(h.Perks))
-		for _, kv := range h.Perks {
-			perks[kv.Key] = kv.Value
-		}
+		perks := helpers.PerksToMap(h.Perks)
 		_, err := s.db.UpsertHeroUpgradeFromSyncContext(ctx, tx, heroes.HeroUpgradeUpsertArgs{
 			Key:     h.Key,
 			Name:    h.Name,

@@ -13,6 +13,7 @@ import (
 
 	"github.com/victorprocure/opendominiongo/internal/domain"
 	"github.com/victorprocure/opendominiongo/internal/dto"
+	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/tech"
 	"gopkg.in/yaml.v3"
@@ -62,10 +63,7 @@ func (s *TechSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) er
 				effActive = *t.Active
 			}
 			// Normalize at sync boundary
-			perks := make(map[string]string, len(t.Perks))
-			for _, kv := range t.Perks {
-				perks[kv.Key] = kv.Value
-			}
+			perks := helpers.PerksToMap(t.Perks)
 			prereq := strings.Join(t.Prerequisites, ",")
 			// Upsert tech and its perks via normalized wrapper
 			_, err := s.db.UpsertTechFromSyncContext(ctx, tx, tech.TechUpsertArgs{

@@ -8,6 +8,7 @@ import (
 	"log/slog"
 
 	"github.com/victorprocure/opendominiongo/internal/dto"
+	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/spells"
 	"gopkg.in/yaml.v3"
@@ -49,10 +50,7 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 
 func (s *SpellsSync) syncSpell(spell *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
 	// map dto -> repo args
-	perks := make(map[string]string, len(spell.Perks))
-	for _, kv := range spell.Perks {
-		perks[kv.Key] = kv.Value
-	}
+	perks := helpers.PerksToMap(spell.Perks)
 	err := s.db.UpsertSpellFromSyncContext(ctx, tx, spells.SpellUpsertArgs{
 		Key:          spell.Key,
 		Name:         spell.Name,

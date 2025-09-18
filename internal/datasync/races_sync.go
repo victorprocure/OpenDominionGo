@@ -12,6 +12,7 @@ import (
 	"github.com/victorprocure/opendominiongo/helpers"
 	"github.com/victorprocure/opendominiongo/internal/domain"
 	"github.com/victorprocure/opendominiongo/internal/dto"
+	perkshelper "github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/races"
 	"gopkg.in/yaml.v3"
@@ -65,10 +66,7 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 
 func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) error {
 	// map DTO -> repo wrapper
-	perks := make(map[string]string, len(r.Perks))
-	for _, kv := range r.Perks {
-		perks[kv.Key] = kv.Value
-	}
+	perks := perkshelper.PerksToMap(r.Perks)
 	units := make([]races.UnitUpsertArg, 0, len(r.Units))
 	for _, u := range r.Units {
 		units = append(units, races.UnitUpsertArg{
@@ -83,7 +81,7 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 			CostMana:     u.Cost.Mana,
 			PowerOffense: u.Power.Offense,
 			PowerDefense: u.Power.Defense,
-			Perks:        toPerkMap(u.Perks),
+			Perks:        perkshelper.PerksToMap(u.Perks),
 		})
 	}
 	// optional description handling
@@ -120,16 +118,7 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 	return nil
 }
 
-func toPerkMap(kv dto.KeyValues) map[string]string {
-	if len(kv) == 0 {
-		return nil
-	}
-	m := make(map[string]string, len(kv))
-	for _, p := range kv {
-		m[p.Key] = p.Value
-	}
-	return m
-}
+// (perk conversion consolidated in internal/helpers/perks.go)
 
 func getRaceFromFile(n string) (*dto.RaceYaml, error) {
 	b, err := racesFS.ReadFile(racesDir + "/" + n)
