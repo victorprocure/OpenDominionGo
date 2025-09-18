@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/victorprocure/opendominiongo/internal/dto"
 )
@@ -31,9 +32,15 @@ func MarshalPerksAsJSONArrayFromMap(m map[string]string) ([]byte, error) {
 		Key   string `json:"key"`
 		Value string `json:"value"`
 	}
-	arr := make([]kv, 0, len(m))
-	for k, v := range m {
-		arr = append(arr, kv{Key: k, Value: v})
+	// deterministic order: sort keys before building the array
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	arr := make([]kv, 0, len(keys))
+	for _, k := range keys {
+		arr = append(arr, kv{Key: k, Value: m[k]})
 	}
 	b, err := json.Marshal(arr)
 	if err != nil {
