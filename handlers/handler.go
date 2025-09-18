@@ -17,6 +17,7 @@ func New(a *app.App, log *slog.Logger) *Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/assets/", h.HandleAssets)
 	mux.HandleFunc("/favicon.ico", h.HandleFavicon)
+	mux.HandleFunc("/healthz", h.HandleHealth)
 	mux.HandleFunc("/loadNavBar", h.HandleNavBar)
 	mux.HandleFunc("/loadLoginRibbon", h.HandleLoginRibbon)
 	mux.HandleFunc("/about", h.HandleAbout)
@@ -81,4 +82,17 @@ func (h *Handler) renderErrorPage(w http.ResponseWriter, r *http.Request, status
 	w.WriteHeader(status)
 
 	components.Error(title, message, status).Render(r.Context(), w)
+}
+
+// HandleHealth provides a minimal liveness/readiness check.
+// It pings the database connection to ensure dependencies are OK.
+func (h *Handler) HandleHealth(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	if err := h.app.DB.PingContext(ctx); err != nil {
+		http.Error(w, "unhealthy", http.StatusServiceUnavailable)
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("ok"))
 }

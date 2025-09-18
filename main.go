@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -59,14 +61,41 @@ func main() {
 	addr := fmt.Sprintf("localhost:%d", cfg.AppPort)
 	sessionHandler := session.NewMiddleware(handler, session.WithSecure(cfg.AppSecure))
 	server := &http.Server{
-		Addr:         addr,
-		Handler:      sessionHandler,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Addr:              addr,
+		Handler:           sessionHandler,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	log.Info("Server is running", slog.String("addr", server.Addr), slog.String("dsn", cfg.BuildPostgresDSN()))
-	if err := server.ListenAndServe(); err != nil {
-		log.Error("server", slog.Any("error", err))
+	// Redact sensitive details from logs; avoid logging full DSN
+	log.Info("Server is starting",
+		slog.String("addr", server.Addr),
+		slog.String("db_host", cfg.DBHost),
+		slog.Int("db_port", cfg.DBPort),
+		slog.String("db_name", cfg.DBName),
+		slog.String("sslmode", cfg.DBSSLMode),
+	)
+
+	// Start server and handle graceful shutdown on interrupt/terminate
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Error("server listen", slog.Any("error", err))
+		}
+	}()
+
+	// Wait for shutdown signal
+	stopCtx, stopCancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stopCancel()
+	<-stopCtx.Done()
+	log.Info("shutdown signal received")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Error("server shutdown", slog.Any("error", err))
+	} else {
+		log.Info("server stopped cleanly")
 	}
 }
