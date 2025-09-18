@@ -1,4 +1,4 @@
-package telescope_monitoring
+package monitoring
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewTelescopeMonitoringRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 func (r *Repo) AddTagContext(ctx context.Context, tx repositories.DbTx, tag string) error {
 	if _, err := tx.ExecContext(ctx, insertTelescopeMonitoringTagSQL, tag); err != nil {

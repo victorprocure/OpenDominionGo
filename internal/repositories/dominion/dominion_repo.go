@@ -1,4 +1,4 @@
-package dominions
+package dominion
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewDominionsRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewDominionRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type Row struct {
 	ID      int

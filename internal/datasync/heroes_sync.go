@@ -11,7 +11,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	"github.com/victorprocure/opendominiongo/internal/repositories/heroes"
+	"github.com/victorprocure/opendominiongo/internal/repositories/hero/upgrade"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,11 +19,11 @@ import (
 var heroUpgradeImportFile []byte
 
 type HeroesSync struct {
-	db *heroes.Repo
+	db *upgrade.Repo
 }
 
 func NewHeroesSync(db *sql.DB, log *slog.Logger) *HeroesSync {
-	return &HeroesSync{db: heroes.NewHeroesRepo(db, log)}
+	return &HeroesSync{db: upgrade.NewHeroUpgradeRepo(db, log)}
 }
 
 func (s *HeroesSync) Name() string {
@@ -45,7 +45,7 @@ func (s *HeroesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 		classes := h.Classes.ToString()
 		// Convert perks from dto.KeyValues to map[string]string at sync boundary
 		perks := helpers.PerksToMap(h.Perks)
-		_, err := s.db.UpsertFromSyncContext(ctx, tx, heroes.UpsertArgs{
+		_, err := s.db.UpsertFromSyncContext(ctx, tx, upgrade.UpsertArgs{
 			Key:     h.Key,
 			Name:    h.Name,
 			Level:   h.Level,

@@ -1,4 +1,4 @@
-package heroes
+package upgrade
 
 import (
 	"context"
@@ -19,7 +19,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroesRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewHeroUpgradeRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 

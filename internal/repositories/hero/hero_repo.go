@@ -1,4 +1,4 @@
-package heroes_core
+package hero
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroesCoreRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewHeroRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	DominionID int
