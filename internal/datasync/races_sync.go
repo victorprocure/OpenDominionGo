@@ -16,13 +16,14 @@ import (
 )
 
 const racesDir = "import_data/races"
+
 //go:embed import_data/races
 var racesFS embed.FS
 
 type RacesSync struct{ db *races.RacesRepo }
 
 func NewRacesSync(db *sql.DB, log *slog.Logger) *RacesSync {
-	return  &RacesSync{db: races.NewRacesRepository(db, log)}
+	return &RacesSync{db: races.NewRacesRepository(db, log)}
 }
 
 func (s *RacesSync) Name() string {
@@ -56,7 +57,7 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 }
 
 func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) error {
-	_, err := s.db.CreateOrUpdateRaceFromYamlContext(r, ctx, tx)
+	_, err := s.db.UpsertRaceFromYamlContext(r, ctx, tx)
 	if err != nil {
 		return err
 	}

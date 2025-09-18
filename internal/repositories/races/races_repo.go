@@ -24,7 +24,7 @@ func NewRacesRepository(db *sql.DB, log *slog.Logger) *RacesRepo {
 	return &RacesRepo{db: db, log: log}
 }
 
-func (r *RacesRepo) CreateOrUpdateRaceFromYamlContext(race *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) (int, error) {
+func (r *RacesRepo) UpsertRaceFromYamlContext(race *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) (int, error) {
 	var rpJSON []byte
 	if len(race.Perks) > 0 {
 		b, err := json.Marshal(race.Perks)

@@ -37,7 +37,7 @@ type HeroUpgradeUpsertArgs struct {
 	Perks   dto.KeyValues
 }
 
-func (r *HeroesRepo) CreateOrUpdateHeroUpgradeSyncContext(ctx context.Context, tx repositories.DbTx, a HeroUpgradeUpsertArgs) (int, error) {
+func (r *HeroesRepo) UpsertHeroUpgradeSyncContext(ctx context.Context, tx repositories.DbTx, a HeroUpgradeUpsertArgs) (int, error) {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
 		b, err := json.Marshal(a.Perks)

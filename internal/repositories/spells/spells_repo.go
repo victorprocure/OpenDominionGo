@@ -69,7 +69,7 @@ func (r *SpellsRepo) GetSpellsByRaceKeyContext(raceKey string, ctx context.Conte
 	return spells, rows.Err()
 }
 
-func (r *SpellsRepo) CreateOrUpdateSpellForSyncContext(sp *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
+func (r *SpellsRepo) UpsertSpellForSyncContext(sp *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
 	var perksJSON []byte
 	if len(sp.Perks) > 0 {
 		b, err := json.Marshal(sp.Perks)

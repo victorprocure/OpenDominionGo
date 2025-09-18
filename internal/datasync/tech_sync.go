@@ -54,7 +54,7 @@ func (s *TechSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) er
 				effActive = *t.Active
 			}
 			// Upsert tech and its perks via normalized wrapper
-			_, err := s.db.CreateOrUpdateTechSyncContext(ctx, tx, tech.TechUpsertArgs{
+			_, err := s.db.UpsertTechSyncContext(ctx, tx, tech.TechUpsertArgs{
 				Key:           key,
 				Name:          t.Name,
 				Prerequisites: t.Prerequisites,

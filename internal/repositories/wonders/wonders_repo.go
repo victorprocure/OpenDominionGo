@@ -24,7 +24,7 @@ func NewWondersRepo(db *sql.DB, log *slog.Logger) *WondersRepo {
 	return &WondersRepo{db: db, log: log}
 }
 
-func (r *WondersRepo) CreateOrUpdateWonderSyncContext(wonder *dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
+func (r *WondersRepo) UpsertWonderSyncContext(wonder *dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
 	var perksJSON []byte
 	if len(wonder.Perks) > 0 {
 		b, err := json.Marshal(wonder.Perks)

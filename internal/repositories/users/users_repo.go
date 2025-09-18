@@ -25,7 +25,7 @@ func NewUsersRepo(db *sql.DB, log *slog.Logger) *UsersRepo {
 	return &UsersRepo{db: db, log: log}
 }
 
-func (r *UsersRepo) CreateOrUpdateUserContext(ctx context.Context, tx repositories.DbTx, u *domain.User) error {
+func (r *UsersRepo) UpsertUserContext(ctx context.Context, tx repositories.DbTx, u *domain.User) error {
 	args := fromDomain(u)
 	err := tx.QueryRowContext(ctx, upsertUserSQL, args...).Scan()
 	if err != nil {

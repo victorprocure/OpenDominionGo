@@ -47,7 +47,7 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 }
 
 func (s *SpellsSync) syncSpell(spell *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
-	err := s.db.CreateOrUpdateSpellForSyncContext(spell, ctx, tx)
+	err := s.db.UpsertSpellForSyncContext(spell, ctx, tx)
 	if err != nil {
 		return fmt.Errorf("unable to create or update spell: %s, error: %w", spell.Key, err)
 	}
