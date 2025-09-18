@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
@@ -24,10 +23,19 @@ func NewWondersRepo(db *sql.DB, log *slog.Logger) *WondersRepo {
 	return &WondersRepo{db: db, log: log}
 }
 
-func (r *WondersRepo) UpsertWonderSyncContext(wonder *dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
+// WonderUpsertArgs is the normalized contract for upserting a wonder.
+type WonderUpsertArgs struct {
+	Key    string
+	Name   string
+	Power  int
+	Active bool
+	Perks  map[string]string
+}
+
+func (r *WondersRepo) UpsertWonderFromSyncContext(ctx context.Context, tx repositories.DbTx, a WonderUpsertArgs) error {
 	var perksJSON []byte
-	if len(wonder.Perks) > 0 {
-		b, err := json.Marshal(wonder.Perks)
+	if len(a.Perks) > 0 {
+		b, err := json.Marshal(a.Perks)
 		if err != nil {
 			return fmt.Errorf("marshal wonder perks: %w", err)
 		}
@@ -36,10 +44,10 @@ func (r *WondersRepo) UpsertWonderSyncContext(wonder *dto.WondersYaml, ctx conte
 
 	var newId int
 	err := tx.QueryRowContext(ctx, upsertWonderSyncSQL,
-		wonder.Key,
-		wonder.Name,
-		wonder.Power,
-		wonder.Active,
+		a.Key,
+		a.Name,
+		a.Power,
+		a.Active,
 		perksJSON,
 	).Scan(&newId)
 	if err != nil {

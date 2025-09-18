@@ -41,7 +41,7 @@ func (s *HeroesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 	for _, h := range hu {
 		// Build normalized repo args
 		classes := h.Classes.ToString()
-		_, err := s.db.UpsertHeroUpgradeSyncContext(ctx, tx, heroes.HeroUpgradeUpsertArgs{
+		_, err := s.db.UpsertHeroUpgradeFromSyncContext(ctx, tx, heroes.HeroUpgradeUpsertArgs{
 			Key:     h.Key,
 			Name:    h.Name,
 			Level:   h.Level,

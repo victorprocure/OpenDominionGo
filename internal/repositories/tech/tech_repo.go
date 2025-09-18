@@ -37,9 +37,9 @@ type TechUpsertArgs struct {
 	Perks         dto.KeyValues
 }
 
-// UpsertTechSyncContext upserts one tech row and its child perks/types using a single SQL statement.
+// UpsertTechFromSyncContext upserts one tech row and its child perks/types using a single SQL statement.
 // Returns the tech id.
-func (r *TechRepo) UpsertTechSyncContext(ctx context.Context, tx repositories.DbTx, a TechUpsertArgs) (int, error) {
+func (r *TechRepo) UpsertTechFromSyncContext(ctx context.Context, tx repositories.DbTx, a TechUpsertArgs) (int, error) {
 	// Marshal perks to JSON (object mapping preserving order via dto.KeyValues MarshalJSON)
 	var perksJSON []byte
 	if len(a.Perks) > 0 {

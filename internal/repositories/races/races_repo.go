@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
@@ -24,10 +23,39 @@ func NewRacesRepository(db *sql.DB, log *slog.Logger) *RacesRepo {
 	return &RacesRepo{db: db, log: log}
 }
 
-func (r *RacesRepo) UpsertRaceFromYamlContext(race *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) (int, error) {
+type UnitUpsertArg struct {
+	Name         string            `json:"name"`
+	Type         string            `json:"type"`
+	NeedBoat     bool              `json:"need_boat"`
+	CostPlatinum int               `json:"cost_platinum"`
+	CostOre      int               `json:"cost_ore"`
+	CostLumber   int               `json:"cost_lumber"`
+	CostGems     int               `json:"cost_gems"`
+	CostMana     int               `json:"cost_mana"`
+	PowerOffense int               `json:"power_offense"`
+	PowerDefense int               `json:"power_defense"`
+	Perks        map[string]string `json:"perks"`
+}
+
+type RaceUpsertArgs struct {
+	Key                 string
+	Name                string
+	Alignment           string
+	Description         string
+	AttackerDifficulty  int
+	ExplorerDifficulty  int
+	ConverterDifficulty int
+	OverallDifficulty   int
+	HomeLandType        string
+	Playable            bool
+	Perks               map[string]string
+	Units               []UnitUpsertArg
+}
+
+func (r *RacesRepo) UpsertRaceFromSyncContext(ctx context.Context, tx repositories.DbTx, a RaceUpsertArgs) (int, error) {
 	var rpJSON []byte
-	if len(race.Perks) > 0 {
-		b, err := json.Marshal(race.Perks)
+	if len(a.Perks) > 0 {
+		b, err := json.Marshal(a.Perks)
 		if err != nil {
 			return 0, fmt.Errorf("marshal race perks: %w", err)
 		}
@@ -35,22 +63,7 @@ func (r *RacesRepo) UpsertRaceFromYamlContext(race *dto.RaceYaml, ctx context.Co
 		rpJSON = b
 	}
 
-	us := make([]dto.UnitSyncJSON, 0, len(race.Units))
-	for _, u := range race.Units {
-		us = append(us, dto.UnitSyncJSON{
-			Name:         u.Name,
-			Type:         u.Type,
-			NeedBoat:     u.NeedBoat,
-			CostPlatinum: u.Cost.Platinum,
-			CostOre:      u.Cost.Ore,
-			CostLumber:   u.Cost.Lumber,
-			CostGems:     u.Cost.Gems,
-			CostMana:     u.Cost.Mana,
-			PowerOffense: u.Power.Offense,
-			PowerDefense: u.Power.Defense,
-			Perks:        u.Perks,
-		})
-	}
+	us := a.Units
 
 	var usJSON []byte
 	if len(us) > 0 {
@@ -63,9 +76,9 @@ func (r *RacesRepo) UpsertRaceFromYamlContext(race *dto.RaceYaml, ctx context.Co
 
 	var raceID int
 	err := tx.QueryRowContext(ctx, upsertRaceFromYamlSQL,
-		race.Key, race.Name, race.Alignment, race.Description,
-		race.AttackerDifficulty, race.ExplorerDifficulty, race.ConverterDifficulty,
-		race.OverallDifficulty, race.HomeLandType, race.Playable.OrDefault(),
+		a.Key, a.Name, a.Alignment, a.Description,
+		a.AttackerDifficulty, a.ExplorerDifficulty, a.ConverterDifficulty,
+		a.OverallDifficulty, a.HomeLandType, a.Playable,
 		rpJSON, usJSON,
 	).Scan(&raceID)
 	if err != nil {

@@ -47,7 +47,23 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 }
 
 func (s *SpellsSync) syncSpell(spell *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
-	err := s.db.UpsertSpellForSyncContext(spell, ctx, tx)
+	// map dto -> repo args
+	perks := make(map[string]string, len(spell.Perks))
+	for _, kv := range spell.Perks {
+		perks[kv.Key] = kv.Value
+	}
+	err := s.db.UpsertSpellFromSyncContext(ctx, tx, spells.SpellUpsertArgs{
+		Key:          spell.Key,
+		Name:         spell.Name,
+		Category:     spell.Category,
+		ManaCost:     spell.ManaCost,
+		StrengthCost: spell.StrengthCost,
+		Duration:     spell.Duration,
+		Cooldown:     spell.Cooldown,
+		Active:       spell.Active.OrDefault(),
+		Races:        spell.Races,
+		Perks:        perks,
+	})
 	if err != nil {
 		return fmt.Errorf("unable to create or update spell: %s, error: %w", spell.Key, err)
 	}

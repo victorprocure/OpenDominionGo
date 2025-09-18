@@ -57,12 +57,62 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 }
 
 func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) error {
-	_, err := s.db.UpsertRaceFromYamlContext(r, ctx, tx)
+	// map DTO -> repo wrapper
+	perks := make(map[string]string, len(r.Perks))
+	for _, kv := range r.Perks {
+		perks[kv.Key] = kv.Value
+	}
+	units := make([]races.UnitUpsertArg, 0, len(r.Units))
+	for _, u := range r.Units {
+		units = append(units, races.UnitUpsertArg{
+			Name:         u.Name,
+			Type:         u.Type,
+			NeedBoat:     u.NeedBoat,
+			CostPlatinum: u.Cost.Platinum,
+			CostOre:      u.Cost.Ore,
+			CostLumber:   u.Cost.Lumber,
+			CostGems:     u.Cost.Gems,
+			CostMana:     u.Cost.Mana,
+			PowerOffense: u.Power.Offense,
+			PowerDefense: u.Power.Defense,
+			Perks:        toPerkMap(u.Perks),
+		})
+	}
+	// optional description handling
+	desc := ""
+	if r.Description != nil {
+		desc = *r.Description
+	}
+	_, err := s.db.UpsertRaceFromSyncContext(ctx, tx, races.RaceUpsertArgs{
+		Key:                 r.Key,
+		Name:                r.Name,
+		Alignment:           r.Alignment,
+		Description:         desc,
+		AttackerDifficulty:  r.AttackerDifficulty,
+		ExplorerDifficulty:  r.ExplorerDifficulty,
+		ConverterDifficulty: r.ConverterDifficulty,
+		OverallDifficulty:   r.OverallDifficulty,
+		HomeLandType:        r.HomeLandType,
+		Playable:            r.Playable.OrDefault(),
+		Perks:               perks,
+		Units:               units,
+	})
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func toPerkMap(kv dto.KeyValues) map[string]string {
+	if len(kv) == 0 {
+		return nil
+	}
+	m := make(map[string]string, len(kv))
+	for _, p := range kv {
+		m[p.Key] = p.Value
+	}
+	return m
 }
 
 func getRaceFromFile(n string) (*dto.RaceYaml, error) {

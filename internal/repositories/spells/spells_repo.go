@@ -10,7 +10,6 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/victorprocure/opendominiongo/internal/domain"
-	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
@@ -69,10 +68,24 @@ func (r *SpellsRepo) GetSpellsByRaceKeyContext(raceKey string, ctx context.Conte
 	return spells, rows.Err()
 }
 
-func (r *SpellsRepo) UpsertSpellForSyncContext(sp *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
+// SpellUpsertArgs is the normalized contract for upserting a spell.
+type SpellUpsertArgs struct {
+	Key          string
+	Name         string
+	Category     string
+	ManaCost     float64
+	StrengthCost float64
+	Duration     int
+	Cooldown     int
+	Active       bool
+	Races        []string
+	Perks        map[string]string
+}
+
+func (r *SpellsRepo) UpsertSpellFromSyncContext(ctx context.Context, tx repositories.DbTx, a SpellUpsertArgs) error {
 	var perksJSON []byte
-	if len(sp.Perks) > 0 {
-		b, err := json.Marshal(sp.Perks)
+	if len(a.Perks) > 0 {
+		b, err := json.Marshal(a.Perks)
 		if err != nil {
 			return fmt.Errorf("unable to marshal perks: %w", err)
 		}
@@ -81,8 +94,8 @@ func (r *SpellsRepo) UpsertSpellForSyncContext(sp *dto.SpellYaml, ctx context.Co
 
 	var id int
 	if err := tx.QueryRowContext(ctx, upsertSpellSQL,
-		sp.Key, sp.Name, sp.Category, sp.ManaCost, sp.StrengthCost,
-		sp.Duration, sp.Cooldown, sp.Active, pq.Array(sp.Races), perksJSON,
+		a.Key, a.Name, a.Category, a.ManaCost, a.StrengthCost,
+		a.Duration, a.Cooldown, a.Active, pq.Array(a.Races), perksJSON,
 	).Scan(&id); err != nil {
 		return fmt.Errorf("unable to prepare upsert spell statement: %w", err)
 	}
@@ -125,7 +138,9 @@ func toDomain(sr *spellRow, r []byte, p []byte) (*domain.Spell, error) {
 		Active:       sr.Active,
 	}
 
-	var racesJson []dto.RaceJSON
+	var racesJson []struct {
+		Key string `json:"key"`
+	}
 	if err := json.Unmarshal(r, &racesJson); err != nil {
 		return nil, fmt.Errorf("unable to unmarshal races: %w", err)
 	}
@@ -137,7 +152,12 @@ func toDomain(sr *spellRow, r []byte, p []byte) (*domain.Spell, error) {
 		}
 	}
 
-	var perksJson []dto.PerkJSON
+	var perksJson []struct {
+		PerkType struct {
+			Key string `json:"key"`
+		} `json:"perk_type"`
+		Value string `json:"value"`
+	}
 	if err := json.Unmarshal(p, &perksJson); err != nil {
 		return nil, fmt.Errorf("unable to unmarshal perks: %w", err)
 	}

@@ -48,7 +48,18 @@ func (s *WondersSync) PerformDataSync(ctx context.Context, tx repositories.DbTx)
 
 func (s *WondersSync) syncWonders(wl []dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
 	for _, w := range wl {
-		err := s.db.UpsertWonderSyncContext(&w, ctx, tx)
+		// map DTO -> repo args (convert KeyValues to map)
+		perks := make(map[string]string, len(w.Perks))
+		for _, kv := range w.Perks {
+			perks[kv.Key] = kv.Value
+		}
+		err := s.db.UpsertWonderFromSyncContext(ctx, tx, wonders.WonderUpsertArgs{
+			Key:    w.Key,
+			Name:   w.Name,
+			Power:  w.Power,
+			Active: w.Active.OrDefault(),
+			Perks:  perks,
+		})
 		if err != nil {
 			return fmt.Errorf("unable to create or update wonder: %s, error: %w", w.Key, err)
 		}
