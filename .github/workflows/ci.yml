@@ -35,11 +35,31 @@ jobs:
       - name: Generate code (templ)
         run: |
           set -e
-          go generate -tags=tools ./...
+          # Run go generate (tools-tagged files), then fall back to templ if nothing created.
+          go generate -tags=tools ./... || true
           if ! ls components/*_templ.go >/dev/null 2>&1; then
             echo "No *_templ.go files found; invoking templ directly as fallback"
             go run github.com/a-h/templ/cmd/templ@v0.3.943 generate
           fi
+
+          # Wait up to several seconds for generated files to appear. This avoids race in CI.
+          FOUND=0
+          for i in 1 2 3 4 5; do
+            if ls components/*_templ.go >/dev/null 2>&1; then
+              FOUND=1
+              break
+            fi
+            echo "templ files not present yet; sleeping... ($i)"
+            sleep 1
+          done
+          if [ "$FOUND" -ne 1 ]; then
+            echo "ERROR: templ did not generate expected files under components/"
+            echo "Current components dir listing:"
+            ls -la components || true
+            exit 1
+          fi
+          echo "templ generation completed; listing components:" 
+          ls -la components | sed -n '1,200p'
       - name: Build
         run: go build ./...
       - name: Test
