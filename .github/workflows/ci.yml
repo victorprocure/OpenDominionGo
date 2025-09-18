@@ -44,8 +44,10 @@ jobs:
         run: go build ./...
       - name: Test
         run: go test ./...
-      - name: Install golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-          args: --timeout=3m
+      - name: Install and run golangci-lint (built with CI Go)
+        run: |
+          set -e
+          # Build golangci-lint with the same Go toolchain used in this job
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          export PATH="$PATH:$(go env GOPATH)/bin"
+          golangci-lint run --timeout=3m
