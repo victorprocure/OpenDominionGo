@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log/slog"
 
+	"github.com/victorprocure/opendominiongo/internal/datasync"
 	"github.com/victorprocure/opendominiongo/internal/repositories/heroes"
 	"github.com/victorprocure/opendominiongo/internal/repositories/races"
 	"github.com/victorprocure/opendominiongo/internal/repositories/spells"
@@ -36,8 +37,8 @@ func New(db *sql.DB, log *slog.Logger) *App {
 }
 
 // Syncers constructors for main to use
-func (a *App) NewTechSync() any        { return nil }
-func (a *App) NewRacesSync() any       { return nil }
-func (a *App) NewSpellsSync() any      { return nil }
-func (a *App) NewWondersSync() any     { return nil }
-func (a *App) NewHeroUpgradeSync() any { return nil }
+func (a *App) NewTechSync() datasync.Syncer        { return datasync.NewTechSync(a.DB, a.Log) }
+func (a *App) NewRacesSync() datasync.Syncer       { return datasync.NewRacesSync(a.DB, a.Log) }
+func (a *App) NewSpellsSync() datasync.Syncer      { return datasync.NewSpellsSync(a.DB, a.Log) }
+func (a *App) NewWondersSync() datasync.Syncer     { return datasync.NewWondersSync(a.DB, a.Log) }
+func (a *App) NewHeroUpgradeSync() datasync.Syncer { return datasync.NewHeroesSync(a.DB, a.Log) }

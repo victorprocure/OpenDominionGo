@@ -12,6 +12,7 @@ import (
 	"github.com/victorprocure/opendominiongo/handlers"
 	"github.com/victorprocure/opendominiongo/internal/app"
 	"github.com/victorprocure/opendominiongo/internal/config"
+	"github.com/victorprocure/opendominiongo/internal/datasync"
 	intdb "github.com/victorprocure/opendominiongo/internal/db"
 	"github.com/victorprocure/opendominiongo/session"
 )
@@ -37,6 +38,21 @@ func main() {
 	// Build application service and handlers
 	appSvc := app.New(sqldb, log)
 	handler := handlers.New(appSvc, log)
+
+	// Run data syncs at startup
+	coord := datasync.NewSyncCoordinator(sqldb, log)
+	syncCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	if err := coord.RunAll(syncCtx,
+		appSvc.NewTechSync(),
+		appSvc.NewRacesSync(),
+		appSvc.NewSpellsSync(),
+		appSvc.NewWondersSync(),
+		appSvc.NewHeroUpgradeSync(),
+	); err != nil {
+		log.Error("initial sync failed", slog.Any("error", err))
+		os.Exit(1)
+	}
 
 	// Build the HTTP server
 	addr := fmt.Sprintf("localhost:%d", cfg.AppPort)
