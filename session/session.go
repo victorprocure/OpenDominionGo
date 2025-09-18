@@ -6,13 +6,15 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-type MiddlewareOpts func(*Middleware)
-type Middleware struct {
-	Next     http.Handler
-	Secure   bool
-	HTTPOnly bool
-	MaxAge   int // seconds; 0 means session cookie
-}
+type (
+	MiddlewareOpts func(*Middleware)
+	Middleware     struct {
+		Next     http.Handler
+		Secure   bool
+		HTTPOnly bool
+		MaxAge   int // seconds; 0 means session cookie
+	}
+)
 
 func NewMiddleware(next http.Handler, opts ...MiddlewareOpts) http.Handler {
 	mw := Middleware{
@@ -50,7 +52,7 @@ func WithMaxAge(seconds int) MiddlewareOpts {
 func ID(r *http.Request) (id string) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		return
+		return id
 	}
 
 	return cookie.Value

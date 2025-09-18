@@ -67,7 +67,6 @@ func (c *CommaDelimitedArray) UnmarshalYAML(n *yaml.Node) error {
 	default:
 		return fmt.Errorf("requires: unsupported YAML node kind %v", n.Kind)
 	}
-
 }
 
 func (c *CommaDelimitedArray) ToString() string {

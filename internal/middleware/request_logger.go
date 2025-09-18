@@ -22,6 +22,7 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	rw.size += n
 	return n, err
 }
+
 func (rw *responseWriter) WriteHeader(statusCode int) {
 	rw.status = statusCode
 	rw.w.WriteHeader(statusCode)

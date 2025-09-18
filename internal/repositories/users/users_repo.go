@@ -53,6 +53,7 @@ func (r *Repo) GetAllUsersContext(ctx context.Context, tx repositories.DbTx) ([]
 
 	return users, rows.Err()
 }
+
 func (r *Repo) GetAllUsers() ([]*domain.User, error) {
 	return r.GetAllUsersContext(context.Background(), r.db)
 }
@@ -65,6 +66,7 @@ func (r *Repo) GetUserByIDContext(ctx context.Context, tx repositories.DbTx, i i
 	}
 	return toDomain(u), nil
 }
+
 func (r *Repo) GetUserByID(id int) (*domain.User, error) {
 	return r.GetUserByIDContext(context.Background(), r.db, id)
 }
@@ -72,12 +74,12 @@ func (r *Repo) GetUserByID(id int) (*domain.User, error) {
 func (r *Repo) GetUserByEmailContext(ctx context.Context, tx repositories.DbTx, e string) (*domain.User, error) {
 	row := tx.QueryRowContext(ctx, getUsersSQL+"WHERE email = $1", e)
 	u, err := scanUserRow(row)
-
 	if err != nil {
 		return nil, err
 	}
 	return toDomain(u), nil
 }
+
 func (r *Repo) GetUserByEmail(e string) (*domain.User, error) {
 	return r.GetUserByEmailContext(context.Background(), r.db, e)
 }

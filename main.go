@@ -27,6 +27,8 @@ func main() {
 	cfg, err := config.Load()
 	if err != nil {
 		log.Error("config load", slog.Any("error", err))
+		// ensure any outstanding cancel funcs run before exiting
+		// none are in scope here, so exit directly
 		os.Exit(1)
 	}
 
@@ -34,6 +36,8 @@ func main() {
 	sqldb, err := intdb.OpenPostgres(context.Background(), cfg)
 	if err != nil {
 		log.Error("db open", slog.Any("error", err))
+		// ensure any outstanding cancel funcs run before exiting
+		// none are in scope here, so exit directly
 		os.Exit(1)
 	}
 	defer sqldb.Close()

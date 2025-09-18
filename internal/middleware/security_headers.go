@@ -46,6 +46,7 @@ func WithCSP(csp string) SecurityOption { return func(c *securityConfig) { c.CSP
 func WithReferrerPolicy(p string) SecurityOption {
 	return func(c *securityConfig) { c.ReferrerPolicy = p }
 }
+
 func WithHSTS(enabled bool, value string) SecurityOption {
 	return func(c *securityConfig) {
 		c.EnableHSTS = enabled

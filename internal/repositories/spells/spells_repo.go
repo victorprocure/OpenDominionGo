@@ -45,7 +45,6 @@ func (r *Repo) GetSpellByKeyContext(ctx context.Context, tx repositories.DbTx, k
 }
 
 func (r *Repo) GetSpellsByRaceKeyContext(ctx context.Context, tx repositories.DbTx, raceKey string) ([]*domain.Spell, error) {
-
 	query := fmt.Sprintf(getSpellNoGroupSQL, defaultRaceWhereClause, `
 		WHERE (
   			COALESCE(cardinality(s.races), 0) = 0           -- NULL or empty array
@@ -131,7 +130,7 @@ func scanOneSpellRow(s repositories.RowScanner) (*domain.Spell, error) {
 	return spell, nil
 }
 
-func toDomain(sr *spellRow, r []byte, p []byte) (*domain.Spell, error) {
+func toDomain(sr *spellRow, r, p []byte) (*domain.Spell, error) {
 	spell := domain.Spell{
 		ID:           sr.ID,
 		Key:          sr.Key,

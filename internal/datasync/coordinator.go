@@ -3,7 +3,6 @@ package datasync
 import (
 	"context"
 	"database/sql"
-
 	"log/slog"
 
 	"github.com/victorprocure/opendominiongo/internal/db"

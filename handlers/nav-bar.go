@@ -21,7 +21,7 @@ func (h *Handler) HandleNavBar(w http.ResponseWriter, r *http.Request) {
 			path = u.Path
 		}
 	}
-	
+
 	err := components.NavItems(getNavItems(path, h)).Render(r.Context(), w)
 	if err != nil {
 		h.Log.Error("render nav bar", "error", err)

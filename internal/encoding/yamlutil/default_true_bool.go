@@ -25,6 +25,7 @@ func (b DefaultTrueBool) OrDefault() bool {
 func (b DefaultTrueBool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(b.OrDefault())
 }
+
 func (b *DefaultTrueBool) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		b.Value = false
