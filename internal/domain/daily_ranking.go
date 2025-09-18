@@ -11,7 +11,7 @@ type DailyRanking struct {
 	PreviousRank int
 }
 
-func NewDailyRanking(round *Round, dominion *Dominion, race *Race, realm *Realm, key string, value int, rank int, previousRank int) *DailyRanking {
+func NewDailyRanking(round *Round, dominion *Dominion, race *Race, realm *Realm, key string, value, rank, previousRank int) *DailyRanking {
 	return &DailyRanking{
 		Round:        round,
 		Dominion:     dominion,

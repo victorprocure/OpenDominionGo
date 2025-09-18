@@ -10,7 +10,7 @@ type Bounty struct {
 	Reward              bool
 }
 
-func NewBounty(round *Round, sourceRealm *Realm, sourceDominion *Dominion, targetDominion *Dominion, collectedByDominion *Dominion, bountyType string, reward bool) *Bounty {
+func NewBounty(round *Round, sourceRealm *Realm, sourceDominion, targetDominion, collectedByDominion *Dominion, bountyType string, reward bool) *Bounty {
 	return &Bounty{
 		Round:               round,
 		SourceRealm:         sourceRealm,
