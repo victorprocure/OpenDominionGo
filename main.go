@@ -17,6 +17,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/datasync"
 	intdb "github.com/victorprocure/opendominiongo/internal/db"
 	"github.com/victorprocure/opendominiongo/internal/middleware"
+	tel "github.com/victorprocure/opendominiongo/internal/observability/telescope"
 	"github.com/victorprocure/opendominiongo/session"
 )
 
@@ -41,6 +42,10 @@ func main() {
 		os.Exit(1)
 	}
 	defer sqldb.Close()
+
+	// Telescope service and log handler
+	telSvc := tel.NewService(sqldb, log)
+	log = slog.New(tel.NewSlogHandler(slog.NewJSONHandler(os.Stderr, nil), telSvc, slog.LevelInfo))
 
 	// Build application service and handlers
 	appSvc := app.New(sqldb, log)
@@ -76,10 +81,14 @@ func main() {
 			shOpts = append(shOpts, middleware.WithCSP(cfg.AppCSP))
 		}
 		chain := middleware.WithRequestID(
-			middleware.RequestLogger(log,
-				middleware.SecurityHeaders(
-					session.NewMiddleware(handler, session.WithSecure(cfg.AppSecure)),
-					shOpts...,
+			middleware.Recoverer(func(msg string, args ...any) { log.Error("recover", slog.String("msg", fmt.Sprintf(msg, args...))) })(
+				telSvc.HTTPMiddleware(
+					middleware.RequestLogger(log,
+						middleware.SecurityHeaders(
+							session.NewMiddleware(handler, session.WithSecure(cfg.AppSecure)),
+							shOpts...,
+						),
+					),
 				),
 			),
 		)
