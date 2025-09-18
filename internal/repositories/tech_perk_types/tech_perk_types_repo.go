@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/tech/perk_type instead (package perk_type).
 package tech_perk_types
 
 import (

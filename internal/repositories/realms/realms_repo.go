@@ -1,4 +1,4 @@
-package realms
+package realm
 
 import (
 	"context"

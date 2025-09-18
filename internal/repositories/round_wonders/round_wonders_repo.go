@@ -1,3 +1,4 @@
+// deprecated: moved to internal/repositories/round/wonder
 package round_wonders
 
 import (

@@ -10,7 +10,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	"github.com/victorprocure/opendominiongo/internal/repositories/wonders"
+	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonders"
 	"gopkg.in/yaml.v3"
 )
 
@@ -18,11 +18,11 @@ import (
 var wonderImportFile []byte
 
 type WondersSync struct {
-	db *wonders.Repo
+	db *wonderrepo.Repo
 }
 
 func NewWondersSync(db *sql.DB, log *slog.Logger) *WondersSync {
-	return &WondersSync{db: wonders.NewWondersRepo(db, log)}
+	return &WondersSync{db: wonderrepo.NewWondersRepo(db, log)}
 }
 
 func (s *WondersSync) Name() string {
@@ -50,7 +50,7 @@ func (s *WondersSync) PerformDataSync(ctx context.Context, tx repositories.DbTx)
 func (s *WondersSync) syncWonders(ctx context.Context, tx repositories.DbTx, wl []dto.WondersYaml) error {
 	for _, w := range wl {
 		perks := helpers.PerksToMap(w.Perks)
-		err := s.db.UpsertFromSyncContext(ctx, tx, wonders.UpsertArgs{
+		err := s.db.UpsertFromSyncContext(ctx, tx, wonderrepo.UpsertArgs{
 			Key:    w.Key,
 			Name:   w.Name,
 			Power:  w.Power,

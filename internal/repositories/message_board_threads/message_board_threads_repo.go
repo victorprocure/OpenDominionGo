@@ -1,4 +1,4 @@
-package message_board_threads
+package message_board_thread
 
 import (
 	"context"

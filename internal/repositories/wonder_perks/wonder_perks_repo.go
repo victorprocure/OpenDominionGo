@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/wonder/perk instead.
 package wonder_perks
 
 import (

@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/dominion/tick instead (package tick).
 package dominion_tick
 
 import (

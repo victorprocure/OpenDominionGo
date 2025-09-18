@@ -1,4 +1,4 @@
-package wonders
+package wonder
 
 import (
 	"context"

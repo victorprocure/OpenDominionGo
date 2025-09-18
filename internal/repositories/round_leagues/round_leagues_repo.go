@@ -1,4 +1,4 @@
-package round_leagues
+package round_league
 
 import (
 	"context"

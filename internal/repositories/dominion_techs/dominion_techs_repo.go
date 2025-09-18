@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/dominion/tech instead (package tech).
 package dominion_techs
 
 import (

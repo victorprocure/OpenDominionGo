@@ -1,4 +1,4 @@
-package forum_posts
+package forum_post
 
 import (
 	"context"

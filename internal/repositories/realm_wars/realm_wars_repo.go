@@ -1,4 +1,4 @@
-package realm_wars
+package realm_war
 
 import (
 	"context"

@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/unit/perk instead (package perk).
 package unit_perks
 
 import (

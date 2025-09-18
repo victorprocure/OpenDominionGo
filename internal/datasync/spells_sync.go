@@ -10,7 +10,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	"github.com/victorprocure/opendominiongo/internal/repositories/spells"
+	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spells"
 	"gopkg.in/yaml.v3"
 )
 
@@ -20,11 +20,11 @@ const spellsYamlFile = "import_data/spells.yml"
 var spellsFile []byte
 
 type SpellsSync struct {
-	db *spells.Repo
+	db *spellrepo.Repo
 }
 
 func NewSpellsSync(db *sql.DB, log *slog.Logger) *SpellsSync {
-	return &SpellsSync{db: spells.NewSpellsRepository(db, log)}
+	return &SpellsSync{db: spellrepo.NewSpellsRepository(db, log)}
 }
 
 func (s *SpellsSync) Name() string {
@@ -51,7 +51,7 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 func (s *SpellsSync) syncSpell(ctx context.Context, tx repositories.DbTx, spell *dto.SpellYaml) error {
 	// map dto -> repo args
 	perks := helpers.PerksToMap(spell.Perks)
-	err := s.db.UpsertFromSyncContext(ctx, tx, spells.UpsertArgs{
+	err := s.db.UpsertFromSyncContext(ctx, tx, spellrepo.UpsertArgs{
 		Key:          spell.Key,
 		Name:         spell.Name,
 		Category:     spell.Category,

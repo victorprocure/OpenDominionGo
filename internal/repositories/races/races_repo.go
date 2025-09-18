@@ -1,4 +1,4 @@
-package races
+package race
 
 import (
 	"context"

@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/spell/perk_type instead (package perk_type).
 package spell_perk_types
 
 import (

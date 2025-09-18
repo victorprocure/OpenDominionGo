@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/dominion/spell instead (package spell).
 package dominion_spells
 
 import (

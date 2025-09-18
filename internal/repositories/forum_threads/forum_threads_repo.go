@@ -1,4 +1,4 @@
-package forum_threads
+package forum_thread
 
 import (
 	"context"

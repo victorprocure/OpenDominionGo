@@ -1,4 +1,4 @@
-package spells
+package spell
 
 import (
 	"context"

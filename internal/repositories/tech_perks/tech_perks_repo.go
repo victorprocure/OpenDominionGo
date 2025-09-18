@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/tech/perk instead (package perk).
 package tech_perks
 
 import (

@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/dominion/queue instead (package queue).
 package dominion_queue
 
 import (

@@ -6,20 +6,20 @@ import (
 
 	"github.com/victorprocure/opendominiongo/internal/datasync"
 	"github.com/victorprocure/opendominiongo/internal/repositories/hero/upgrade"
-	"github.com/victorprocure/opendominiongo/internal/repositories/races"
-	"github.com/victorprocure/opendominiongo/internal/repositories/spells"
+	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/races"
+	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spells"
 	"github.com/victorprocure/opendominiongo/internal/repositories/tech"
-	"github.com/victorprocure/opendominiongo/internal/repositories/wonders"
+	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonders"
 )
 
 // App holds repo instances and shared dependencies.
 type App struct {
 	DB      *sql.DB
 	Log     *slog.Logger
-	Spells  *spells.Repo
+	Spells  *spellrepo.Repo
 	Tech    *tech.Repo
-	Wonders *wonders.Repo
-	Races   *races.Repo
+	Wonders *wonderrepo.Repo
+	Races   *racerepo.Repo
 	Heroes  *upgrade.Repo
 }
 
@@ -28,10 +28,10 @@ func New(db *sql.DB, log *slog.Logger) *App {
 	return &App{
 		DB:      db,
 		Log:     log,
-		Spells:  spells.NewSpellsRepository(db, log),
+		Spells:  spellrepo.NewSpellsRepository(db, log),
 		Tech:    tech.NewTechRepo(db, log),
-		Wonders: wonders.NewWondersRepo(db, log),
-		Races:   races.NewRacesRepository(db, log),
+		Wonders: wonderrepo.NewWondersRepo(db, log),
+		Races:   racerepo.NewRacesRepository(db, log),
 		Heroes:  upgrade.NewHeroUpgradeRepo(db, log),
 	}
 }

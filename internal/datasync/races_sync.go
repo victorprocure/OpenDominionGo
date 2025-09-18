@@ -13,7 +13,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	"github.com/victorprocure/opendominiongo/internal/repositories/races"
+	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/races"
 	"gopkg.in/yaml.v3"
 )
 
@@ -23,12 +23,12 @@ const racesDir = "import_data/races"
 var racesFS embed.FS
 
 type RacesSync struct {
-	db  *races.Repo
+	db  *racerepo.Repo
 	log *slog.Logger
 }
 
 func NewRacesSync(db *sql.DB, log *slog.Logger) *RacesSync {
-	return &RacesSync{db: races.NewRacesRepository(db, log), log: log}
+	return &RacesSync{db: racerepo.NewRacesRepository(db, log), log: log}
 }
 
 func (s *RacesSync) Name() string {
@@ -61,9 +61,9 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 func (s *RacesSync) syncRace(ctx context.Context, tx repositories.DbTx, r *dto.RaceYaml) error {
 	// map DTO -> repo wrapper
 	perks := helpers.PerksToMap(r.Perks)
-	units := make([]races.UnitUpsertArg, 0, len(r.Units))
+	units := make([]racerepo.UnitUpsertArg, 0, len(r.Units))
 	for _, u := range r.Units {
-		units = append(units, races.UnitUpsertArg{
+		units = append(units, racerepo.UnitUpsertArg{
 			Slot:         u.Slot,
 			Name:         u.Name,
 			Type:         u.Type,
@@ -91,7 +91,7 @@ func (s *RacesSync) syncRace(ctx context.Context, tx repositories.DbTx, r *dto.R
 		s.log.Info("race units json", slog.String("race", r.Key), slog.String("units", string(b)))
 	}
 
-	_, err := s.db.UpsertFromSyncContext(ctx, tx, races.UpsertArgs{
+	_, err := s.db.UpsertFromSyncContext(ctx, tx, racerepo.UpsertArgs{
 		Key:                 r.Key,
 		Name:                r.Name,
 		Alignment:           r.Alignment,

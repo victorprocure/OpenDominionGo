@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/hero/combatant instead (package combatant).
 package hero_combatants
 
 import (

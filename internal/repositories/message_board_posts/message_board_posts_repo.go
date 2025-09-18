@@ -1,4 +1,4 @@
-package message_board_posts
+package message_board_post
 
 import (
 	"context"

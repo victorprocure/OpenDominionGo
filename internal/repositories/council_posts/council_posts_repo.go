@@ -1,4 +1,4 @@
-package council_posts
+package council_post
 
 import (
 	"context"

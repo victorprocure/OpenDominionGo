@@ -1,4 +1,4 @@
-package bounties
+package bounty
 
 import (
 	"context"

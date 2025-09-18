@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/race/perk instead (package perk).
 package race_perks
 
 import (

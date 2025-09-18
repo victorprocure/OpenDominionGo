@@ -1,4 +1,4 @@
-package council_threads
+package council_thread
 
 import (
 	"context"

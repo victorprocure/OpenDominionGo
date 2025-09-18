@@ -1,4 +1,4 @@
-package daily_rankings
+package daily_ranking
 
 import (
 	"context"

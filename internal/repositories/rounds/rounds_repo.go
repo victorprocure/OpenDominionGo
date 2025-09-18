@@ -1,4 +1,4 @@
-package rounds
+package round
 
 import (
 	"context"

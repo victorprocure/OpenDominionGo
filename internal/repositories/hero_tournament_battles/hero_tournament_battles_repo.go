@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/hero/tournament/battle instead (package battle).
 package hero_tournament_battles
 
 import (

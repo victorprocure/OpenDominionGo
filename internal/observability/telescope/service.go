@@ -7,22 +7,22 @@ import (
 	"log/slog"
 
 	"github.com/google/uuid"
-	telentries "github.com/victorprocure/opendominiongo/internal/repositories/telescope/entries"
-	teltags "github.com/victorprocure/opendominiongo/internal/repositories/telescope/entries/tags"
+	telentry "github.com/victorprocure/opendominiongo/internal/repositories/telescope/entry"
+	teltag "github.com/victorprocure/opendominiongo/internal/repositories/telescope/entry/tag"
 )
 
 type Service struct {
 	db      *sql.DB
-	entries *telentries.Repo
-	tags    *teltags.Repo
+	entries *telentry.Repo
+	tags    *teltag.Repo
 	log     *slog.Logger
 }
 
 func NewService(db *sql.DB, log *slog.Logger) *Service {
 	return &Service{
 		db:      db,
-		entries: telentries.NewRepo(db, log),
-		tags:    teltags.NewRepo(db, log),
+		entries: telentry.NewRepo(db, log),
+		tags:    teltag.NewRepo(db, log),
 		log:     log,
 	}
 }
@@ -62,7 +62,7 @@ func (s *Service) Capture(ctx context.Context, typ string, content any, opts ...
 
 	// Insert entry
 	entryUUID := uuid.New()
-	sequence, err := s.entries.CreateContext(ctx, s.db, telentries.CreateArgs{
+	sequence, err := s.entries.CreateContext(ctx, s.db, telentry.CreateArgs{
 		UUID:                 entryUUID,
 		BatchID:              co.BatchID,
 		FamilyHash:           co.FamilyHash,
@@ -75,7 +75,7 @@ func (s *Service) Capture(ctx context.Context, typ string, content any, opts ...
 	}
 	// Add tags
 	for _, tag := range co.Tags {
-		_ = s.tags.CreateContext(ctx, s.db, teltags.CreateArgs{EntryUUID: entryUUID, Tag: tag})
+		_ = s.tags.CreateContext(ctx, s.db, teltag.CreateArgs{EntryUUID: entryUUID, Tag: tag})
 	}
 	return sequence, nil
 }

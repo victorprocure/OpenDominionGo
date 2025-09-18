@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/hero/battle/queue instead (package queue).
 package hero_battle_queue
 
 import (

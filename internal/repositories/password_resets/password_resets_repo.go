@@ -1,4 +1,4 @@
-package password_resets
+package password_reset
 
 import (
 	"context"

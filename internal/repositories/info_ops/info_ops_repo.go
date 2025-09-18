@@ -1,4 +1,4 @@
-package info_ops
+package info_op
 
 import (
 	"context"

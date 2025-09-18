@@ -1,4 +1,4 @@
-package game_events
+package game_event
 
 import (
 	"context"

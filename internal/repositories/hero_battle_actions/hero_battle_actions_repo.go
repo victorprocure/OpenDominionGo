@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/hero/battle/action instead (package action).
 package hero_battle_actions
 
 import (

@@ -1,4 +1,5 @@
-package dominion_journals
+// Deprecated: use internal/repositories/dominion/journal instead (package journal).
+package dominion_journal
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package message_board_categories
+package message_board_category
 
 import (
 	"context"

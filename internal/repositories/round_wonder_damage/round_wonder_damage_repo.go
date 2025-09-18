@@ -1,3 +1,4 @@
+// deprecated: moved to internal/repositories/round/wonder/damage
 package round_wonder_damage
 
 import (

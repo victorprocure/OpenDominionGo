@@ -1,3 +1,4 @@
+// Deprecated: use internal/repositories/hero/tournament/participant instead (package participant).
 package hero_tournament_participants
 
 import (
