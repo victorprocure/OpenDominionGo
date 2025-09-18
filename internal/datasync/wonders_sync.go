@@ -18,7 +18,7 @@ import (
 var wonderImportFile []byte
 
 type WondersSync struct {
-	db *wonders.WondersRepo
+	db *wonders.Repo
 }
 
 func NewWondersSync(db *sql.DB, log *slog.Logger) *WondersSync {
@@ -50,7 +50,7 @@ func (s *WondersSync) PerformDataSync(ctx context.Context, tx repositories.DbTx)
 func (s *WondersSync) syncWonders(wl []dto.WondersYaml, ctx context.Context, tx repositories.DbTx) error {
 	for _, w := range wl {
 		perks := helpers.PerksToMap(w.Perks)
-		err := s.db.UpsertWonderFromSyncContext(ctx, tx, wonders.WonderUpsertArgs{
+		err := s.db.UpsertFromSyncContext(ctx, tx, wonders.UpsertArgs{
 			Key:    w.Key,
 			Name:   w.Name,
 			Power:  w.Power,

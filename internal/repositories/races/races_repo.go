@@ -14,13 +14,13 @@ import (
 //go:embed sql/upsert_race_for_sync.sql
 var upsertRaceFromYamlSQL string
 
-type RacesRepo struct {
+type Repo struct {
 	db  *sql.DB
 	log *slog.Logger
 }
 
-func NewRacesRepository(db *sql.DB, log *slog.Logger) *RacesRepo {
-	return &RacesRepo{db: db, log: log}
+func NewRacesRepository(db *sql.DB, log *slog.Logger) *Repo {
+	return &Repo{db: db, log: log}
 }
 
 type UnitUpsertArg struct {
@@ -38,7 +38,7 @@ type UnitUpsertArg struct {
 	Perks        map[string]string `json:"perks"`
 }
 
-type RaceUpsertArgs struct {
+type UpsertArgs struct {
 	Key                 string
 	Name                string
 	Alignment           string
@@ -53,7 +53,7 @@ type RaceUpsertArgs struct {
 	Units               []UnitUpsertArg
 }
 
-func (r *RacesRepo) UpsertRaceFromSyncContext(ctx context.Context, tx repositories.DbTx, a RaceUpsertArgs) (int, error) {
+func (r *Repo) UpsertFromSyncContext(ctx context.Context, tx repositories.DbTx, a UpsertArgs) (int, error) {
 	var rpJSON []byte
 	if len(a.Perks) > 0 {
 		b, err := json.Marshal(a.Perks)

@@ -7,5 +7,10 @@ import (
 )
 
 func (h *Handler) HandleRules(w http.ResponseWriter, r *http.Request) {
-	components.Rules().Render(r.Context(), w)
+	err := components.Rules().Render(r.Context(), w)
+	if err != nil {
+		h.Log.Error("render rules", "error", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }

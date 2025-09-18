@@ -3,7 +3,7 @@ package users
 import "time"
 
 type userRow struct {
-	Id                   int       `db:"id"`
+	ID                   int       `db:"id"`
 	Activated            bool      `db:"activated"`
 	ActivationCode       string    `db:"activation_code"`
 	Avatar               string    `db:"avatar"`

@@ -12,14 +12,14 @@ type HeroBattle struct {
 }
 
 type HeroBattleQueue struct {
-	Id     int
+	ID     int
 	Hero   *Hero
 	Level  int
 	Rating int
 }
 
 type HeroBattleAction struct {
-	Id              int
+	ID              int
 	HeroBattle      *HeroBattle
 	Combatant       *HeroCombatant
 	TargetCombatant *HeroCombatant

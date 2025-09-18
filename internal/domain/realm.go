@@ -10,9 +10,9 @@ type Realm struct {
 	Name              string
 	Motd              string
 	MotdUpdatedAt     time.Time
-	DiscordRoleId     string
+	DiscordRoleID     string
 	Rating            int
-	DiscordCategoryId string
+	DiscordCategoryID string
 	GeneralDominion   *Dominion
 	MagisterDominion  *Dominion
 	MageDominion      *Dominion

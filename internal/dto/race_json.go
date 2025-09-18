@@ -3,7 +3,7 @@ package dto
 import "time"
 
 type RaceJSON struct {
-	Id                  int       `json:"id"`
+	ID                  int       `json:"id"`
 	Key                 string    `json:"key"`
 	Name                string    `json:"name"`
 	Alignment           string    `json:"alignment"`

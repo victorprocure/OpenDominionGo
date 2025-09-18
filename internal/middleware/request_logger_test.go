@@ -12,7 +12,7 @@ import (
 
 type testHandler struct{}
 
-func (h testHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h testHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(204)
 	_, _ = w.Write([]byte{})
 }
@@ -33,8 +33,8 @@ func (h *captureHandler) WithAttrs([]slog.Attr) slog.Handler { return h }
 func (h *captureHandler) WithGroup(string) slog.Handler      { return h }
 
 func TestRequestLogger_Basic(t *testing.T) {
-	cap := &captureHandler{}
-	logger := slog.New(cap)
+	c := &captureHandler{}
+	logger := slog.New(c)
 
 	next := testHandler{}
 	h := WithRequestID(RequestLogger(logger, next))
@@ -46,13 +46,13 @@ func TestRequestLogger_Basic(t *testing.T) {
 	if rec.Code != 204 {
 		t.Fatalf("status code mismatch: %d", rec.Code)
 	}
-	if len(cap.recs) == 0 {
+	if len(c.recs) == 0 {
 		t.Fatalf("expected at least one log record")
 	}
 	// sanity check duration present and non-negative
 	foundDur := false
 	foundRID := false
-	cap.recs[0].Attrs(func(a slog.Attr) bool {
+	c.recs[0].Attrs(func(a slog.Attr) bool {
 		if a.Key == "duration" {
 			if d, ok := a.Value.Any().(time.Duration); !ok || d < 0 {
 				t.Fatalf("invalid duration attr: %#v", a.Value)

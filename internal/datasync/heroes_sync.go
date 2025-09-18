@@ -19,7 +19,7 @@ import (
 var heroUpgradeImportFile []byte
 
 type HeroesSync struct {
-	db *heroes.HeroesRepo
+	db *heroes.Repo
 }
 
 func NewHeroesSync(db *sql.DB, log *slog.Logger) *HeroesSync {
@@ -45,7 +45,7 @@ func (s *HeroesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 		classes := h.Classes.ToString()
 		// Convert perks from dto.KeyValues to map[string]string at sync boundary
 		perks := helpers.PerksToMap(h.Perks)
-		_, err := s.db.UpsertHeroUpgradeFromSyncContext(ctx, tx, heroes.HeroUpgradeUpsertArgs{
+		_, err := s.db.UpsertFromSyncContext(ctx, tx, heroes.UpsertArgs{
 			Key:     h.Key,
 			Name:    h.Name,
 			Level:   h.Level,

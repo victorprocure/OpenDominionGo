@@ -8,7 +8,7 @@ import (
 )
 
 func TestSecurityHeaders_Defaults(t *testing.T) {
-	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(200) })
+	next := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(200) })
 	h := SecurityHeaders(next)
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
@@ -33,7 +33,7 @@ func TestSecurityHeaders_Defaults(t *testing.T) {
 }
 
 func TestSecurityHeaders_OverrideCSP_And_HSTS(t *testing.T) {
-	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(200) })
+	next := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(200) })
 	h := SecurityHeaders(next, WithCSP("default-src 'self'"), WithHSTS(true, "max-age=123"))
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	// simulate TLS by setting a non-nil TLS ConnectionState

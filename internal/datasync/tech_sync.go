@@ -25,7 +25,7 @@ const techsDir = "import_data/techs"
 var techsFS embed.FS
 
 type TechSync struct {
-	db *tech.TechRepo
+	db *tech.Repo
 }
 
 func NewTechSync(db *sql.DB, log *slog.Logger) *TechSync {
@@ -66,7 +66,7 @@ func (s *TechSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) er
 			perks := helpers.PerksToMap(t.Perks)
 			prereq := strings.Join(t.Prerequisites, ",")
 			// Upsert tech and its perks via normalized wrapper
-			_, err := s.db.UpsertTechFromSyncContext(ctx, tx, tech.TechUpsertArgs{
+			_, err := s.db.UpsertFromSyncContext(ctx, tx, tech.UpsertArgs{
 				Key:           key,
 				Name:          t.Name,
 				Prerequisites: prereq,

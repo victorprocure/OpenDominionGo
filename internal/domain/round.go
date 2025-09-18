@@ -13,7 +13,7 @@ type Round struct {
 	PlayersPerRace               int
 	MixedAlignment               bool
 	OffensiveActionsProhibitedAt time.Time
-	DiscordGuildId               string
+	DiscordGuildID               string
 	TechVersion                  int
 	LargestHit                   int
 	AssignmentComplete           bool

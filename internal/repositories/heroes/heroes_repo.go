@@ -14,18 +14,18 @@ import (
 //go:embed sql/upsert_hero_upgrade_with_perks.sql
 var upsertHeroUpgradeWithPerksSQL string
 
-type HeroesRepo struct {
+type Repo struct {
 	db  *sql.DB
 	log *slog.Logger
 }
 
-func NewHeroesRepo(db *sql.DB, log *slog.Logger) *HeroesRepo {
-	return &HeroesRepo{db: db, log: log}
+func NewHeroesRepo(db *sql.DB, log *slog.Logger) *Repo {
+	return &Repo{db: db, log: log}
 }
 
-// HeroUpgradeUpsertArgs is the repo-boundary contract for upserting a hero upgrade.
+// UpsertArgs is the repo-boundary contract for upserting a hero upgrade.
 // It decouples the repository from YAML-specific DTOs and normalizes inputs.
-type HeroUpgradeUpsertArgs struct {
+type UpsertArgs struct {
 	Key     string
 	Name    string
 	Level   int
@@ -36,7 +36,7 @@ type HeroUpgradeUpsertArgs struct {
 	Perks   map[string]string
 }
 
-func (r *HeroesRepo) UpsertHeroUpgradeFromSyncContext(ctx context.Context, tx repositories.DbTx, a HeroUpgradeUpsertArgs) (int, error) {
+func (r *Repo) UpsertFromSyncContext(ctx context.Context, tx repositories.DbTx, a UpsertArgs) (int, error) {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
 		b, err := json.Marshal(a.Perks)

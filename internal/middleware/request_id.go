@@ -13,7 +13,7 @@ type ctxKey string
 
 const (
 	requestIDKey    ctxKey = "request_id"
-	HeaderRequestID        = "X-Request-Id"
+	HeaderRequestID string = "X-Request-ID"
 )
 
 // WithRequestID ensures each request has a stable ID, taken from header or generated.

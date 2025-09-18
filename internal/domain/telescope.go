@@ -6,7 +6,7 @@ import (
 
 type TelescopeEntry struct {
 	Sequence             int64
-	BatchId              uuid.UUID
+	BatchID              uuid.UUID
 	FamilyHash           string
 	ShouldDisplayOnIndex bool
 	Type                 string

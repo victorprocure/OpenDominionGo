@@ -1,7 +1,7 @@
 package domain
 
 type Hero struct {
-	Id               int
+	ID               int
 	Dominion         *Dominion
 	Name             string
 	Class            string

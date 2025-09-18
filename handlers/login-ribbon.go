@@ -7,5 +7,10 @@ import (
 )
 
 func (h *Handler) HandleLoginRibbon(w http.ResponseWriter, r *http.Request) {
-	components.LoginRibbon(components.LoginRibbonOpts{LoggedIn: false}).Render(r.Context(), w)
+	err := components.LoginRibbon(components.LoginRibbonOpts{LoggedIn: false}).Render(r.Context(), w)
+	if err != nil {
+		h.Log.Error("render login ribbon", "error", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }

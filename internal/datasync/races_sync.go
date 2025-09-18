@@ -23,7 +23,7 @@ const racesDir = "import_data/races"
 var racesFS embed.FS
 
 type RacesSync struct {
-	db  *races.RacesRepo
+	db  *races.Repo
 	log *slog.Logger
 }
 
@@ -91,7 +91,7 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 		s.log.Info("race units json", slog.String("race", r.Key), slog.String("units", string(b)))
 	}
 
-	_, err := s.db.UpsertRaceFromSyncContext(ctx, tx, races.RaceUpsertArgs{
+	_, err := s.db.UpsertFromSyncContext(ctx, tx, races.UpsertArgs{
 		Key:                 r.Key,
 		Name:                r.Name,
 		Alignment:           r.Alignment,

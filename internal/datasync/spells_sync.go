@@ -20,7 +20,7 @@ const spellsYamlFile = "import_data/spells.yml"
 var spellsFile []byte
 
 type SpellsSync struct {
-	db *spells.SpellsRepo
+	db *spells.Repo
 }
 
 func NewSpellsSync(db *sql.DB, log *slog.Logger) *SpellsSync {
@@ -38,7 +38,7 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 	}
 
 	for _, spell := range spells {
-		if err := s.syncSpell(&spell, ctx, tx); err != nil {
+		if err := s.syncSpell(ctx, tx, &spell); err != nil {
 			// Stop on first error so we surface the underlying DB error
 			// (Postgres marks the transaction as failed after the first error).
 			return err
@@ -48,10 +48,10 @@ func (s *SpellsSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 	return nil
 }
 
-func (s *SpellsSync) syncSpell(spell *dto.SpellYaml, ctx context.Context, tx repositories.DbTx) error {
+func (s *SpellsSync) syncSpell(ctx context.Context, tx repositories.DbTx, spell *dto.SpellYaml) error {
 	// map dto -> repo args
 	perks := helpers.PerksToMap(spell.Perks)
-	err := s.db.UpsertSpellFromSyncContext(ctx, tx, spells.SpellUpsertArgs{
+	err := s.db.UpsertFromSyncContext(ctx, tx, spells.UpsertArgs{
 		Key:          spell.Key,
 		Name:         spell.Name,
 		Category:     spell.Category,

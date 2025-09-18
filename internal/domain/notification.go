@@ -7,7 +7,7 @@ import (
 type Notification struct {
 	Type           string
 	NotifiableType string
-	NotifiableId   int64
+	NotifiableID   int64
 	Data           string
 	ReadAt         time.Time
 }

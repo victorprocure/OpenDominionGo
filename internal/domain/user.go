@@ -34,7 +34,7 @@ type UserActivity struct {
 
 type UserDiscordUser struct {
 	User          *User
-	DiscordUserId string
+	DiscordUserID string
 	Username      string
 	Discriminator int
 	Email         string
@@ -43,8 +43,8 @@ type UserDiscordUser struct {
 }
 
 type UserFeedback struct {
-	SourceId int
-	TargetId int
+	SourceID int
+	TargetID int
 	Endorsed bool
 }
 

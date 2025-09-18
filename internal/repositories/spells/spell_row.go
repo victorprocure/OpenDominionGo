@@ -3,7 +3,7 @@ package spells
 import "time"
 
 type spellRow struct {
-	Id           int       `db:"id"`
+	ID           int       `db:"id"`
 	Key          string    `db:"key"`
 	Name         string    `db:"name"`
 	Category     string    `db:"category"`

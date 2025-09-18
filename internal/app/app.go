@@ -16,11 +16,11 @@ import (
 type App struct {
 	DB      *sql.DB
 	Log     *slog.Logger
-	Spells  *spells.SpellsRepo
-	Tech    *tech.TechRepo
-	Wonders *wonders.WondersRepo
-	Races   *races.RacesRepo
-	Heroes  *heroes.HeroesRepo
+	Spells  *spells.Repo
+	Tech    *tech.Repo
+	Wonders *wonders.Repo
+	Races   *races.Repo
+	Heroes  *heroes.Repo
 }
 
 // New creates an App by constructing repositories.

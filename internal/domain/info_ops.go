@@ -1,7 +1,7 @@
 package domain
 
 type InfoOps struct {
-	Id             int
+	ID             int
 	SourceRealm    *Realm
 	SourceDominion *Dominion
 	TargetDominion *Dominion

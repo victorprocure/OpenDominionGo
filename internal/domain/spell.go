@@ -1,7 +1,7 @@
 package domain
 
 type Spell struct {
-	Id           int
+	ID           int
 	Key          string
 	Name         string
 	Category     string

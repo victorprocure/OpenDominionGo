@@ -11,20 +11,20 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
-type TechRepo struct {
+type Repo struct {
 	db  *sql.DB
 	log *slog.Logger
 }
 
-func NewTechRepo(db *sql.DB, log *slog.Logger) *TechRepo {
-	return &TechRepo{db: db, log: log}
+func NewTechRepo(db *sql.DB, log *slog.Logger) *Repo {
+	return &Repo{db: db, log: log}
 }
 
 //go:embed sql/upsert_tech_with_perks.sql
 var upsertTechWithPerksSQL string
 
-// TechUpsertArgs captures the normalized inputs needed to upsert a single tech and its perks.
-type TechUpsertArgs struct {
+// UpsertArgs captures the normalized inputs needed to upsert a single tech and its perks.
+type UpsertArgs struct {
 	Key           string
 	Name          string
 	Prerequisites string
@@ -35,9 +35,9 @@ type TechUpsertArgs struct {
 	Perks         map[string]string
 }
 
-// UpsertTechFromSyncContext upserts one tech row and its child perks/types using a single SQL statement.
+// UpsertFromSyncContext upserts one tech row and its child perks/types using a single SQL statement.
 // Returns the tech id.
-func (r *TechRepo) UpsertTechFromSyncContext(ctx context.Context, tx repositories.DbTx, a TechUpsertArgs) (int, error) {
+func (r *Repo) UpsertFromSyncContext(ctx context.Context, tx repositories.DbTx, a UpsertArgs) (int, error) {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
 		b, err := json.Marshal(a.Perks)

@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type FailedJob struct {
-	Id         int64
+	ID         int64
 	Connection string
 	Queue      string
 	Payload    string
@@ -12,7 +12,7 @@ type FailedJob struct {
 }
 
 type Job struct {
-	Id          int64
+	ID          int64
 	Queue       string
 	Payload     string
 	Attempts    int16

@@ -22,16 +22,16 @@ var upsertSpellSQL string
 
 const defaultRaceWhereClause = `WHERE r.key = ANY (COALESCE(s.races, ARRAY[]::text[]))`
 
-type SpellsRepo struct {
+type Repo struct {
 	db  *sql.DB
 	log *slog.Logger
 }
 
-func NewSpellsRepository(db *sql.DB, log *slog.Logger) *SpellsRepo {
-	return &SpellsRepo{db: db, log: log}
+func NewSpellsRepository(db *sql.DB, log *slog.Logger) *Repo {
+	return &Repo{db: db, log: log}
 }
 
-func (r *SpellsRepo) GetSpellByKeyContext(key string, ctx context.Context, tx repositories.DbTx) (*domain.Spell, error) {
+func (r *Repo) GetSpellByKeyContext(ctx context.Context, tx repositories.DbTx, key string) (*domain.Spell, error) {
 	query := fmt.Sprintf(getSpellNoGroupSQL, defaultRaceWhereClause, "WHERE s.key = $1")
 	spell, err := scanOneSpellRow(tx.QueryRowContext(ctx, query, key))
 	if err != nil {
@@ -44,11 +44,11 @@ func (r *SpellsRepo) GetSpellByKeyContext(key string, ctx context.Context, tx re
 	return spell, nil
 }
 
-func (r *SpellsRepo) GetSpellsByRaceKeyContext(raceKey string, ctx context.Context, tx repositories.DbTx) ([]*domain.Spell, error) {
+func (r *Repo) GetSpellsByRaceKeyContext(ctx context.Context, tx repositories.DbTx, raceKey string) ([]*domain.Spell, error) {
 
 	query := fmt.Sprintf(getSpellNoGroupSQL, defaultRaceWhereClause, `
 		WHERE (
-  			COALESCE(cardinality(s.races), 0) = 0                -- NULL or empty array
+  			COALESCE(cardinality(s.races), 0) = 0           -- NULL or empty array
   			OR s.races @> ARRAY[$1]::text[]                 -- contains raceKey
 		)`)
 	rows, err := tx.QueryContext(ctx, query, raceKey)
@@ -69,8 +69,8 @@ func (r *SpellsRepo) GetSpellsByRaceKeyContext(raceKey string, ctx context.Conte
 	return spells, rows.Err()
 }
 
-// SpellUpsertArgs is the normalized contract for upserting a spell.
-type SpellUpsertArgs struct {
+// UpsertArgs is the normalized contract for upserting a spell.
+type UpsertArgs struct {
 	Key          string
 	Name         string
 	Category     string
@@ -83,7 +83,7 @@ type SpellUpsertArgs struct {
 	Perks        map[string]string
 }
 
-func (r *SpellsRepo) UpsertSpellFromSyncContext(ctx context.Context, tx repositories.DbTx, a SpellUpsertArgs) error {
+func (r *Repo) UpsertFromSyncContext(ctx context.Context, tx repositories.DbTx, a UpsertArgs) error {
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
 		var err error
@@ -115,7 +115,7 @@ func scanOneSpellRow(s repositories.RowScanner) (*domain.Spell, error) {
 		races []byte
 		perks []byte
 	)
-	if err := s.Scan(&sp.Id, &sp.Key, &sp.Name, &sp.Category,
+	if err := s.Scan(&sp.ID, &sp.Key, &sp.Name, &sp.Category,
 		&sp.CostMana, &sp.CostStrength, &sp.Duration, &sp.Cooldown,
 		&sp.Active, &races, &perks); err != nil {
 		if err == sql.ErrNoRows {
@@ -133,7 +133,7 @@ func scanOneSpellRow(s repositories.RowScanner) (*domain.Spell, error) {
 
 func toDomain(sr *spellRow, r []byte, p []byte) (*domain.Spell, error) {
 	spell := domain.Spell{
-		Id:           sr.Id,
+		ID:           sr.ID,
 		Key:          sr.Key,
 		Name:         sr.Name,
 		Category:     sr.Category,
@@ -144,33 +144,33 @@ func toDomain(sr *spellRow, r []byte, p []byte) (*domain.Spell, error) {
 		Active:       sr.Active,
 	}
 
-	var racesJson []struct {
+	var racesJSON []struct {
 		Key string `json:"key"`
 	}
-	if err := json.Unmarshal(r, &racesJson); err != nil {
+	if err := json.Unmarshal(r, &racesJSON); err != nil {
 		return nil, fmt.Errorf("unable to unmarshal races: %w", err)
 	}
 
-	if len(racesJson) > 0 {
-		spell.RaceKeys = make([]string, len(racesJson))
-		for i, r := range racesJson {
+	if len(racesJSON) > 0 {
+		spell.RaceKeys = make([]string, len(racesJSON))
+		for i, r := range racesJSON {
 			spell.RaceKeys[i] = r.Key
 		}
 	}
 
-	var perksJson []struct {
+	var perksJSON []struct {
 		PerkType struct {
 			Key string `json:"key"`
 		} `json:"perk_type"`
 		Value string `json:"value"`
 	}
-	if err := json.Unmarshal(p, &perksJson); err != nil {
+	if err := json.Unmarshal(p, &perksJSON); err != nil {
 		return nil, fmt.Errorf("unable to unmarshal perks: %w", err)
 	}
 
-	if len(perksJson) > 0 {
-		spell.Perks = make([]domain.SpellPerk, len(perksJson))
-		for i, p := range perksJson {
+	if len(perksJSON) > 0 {
+		spell.Perks = make([]domain.SpellPerk, len(perksJSON))
+		for i, p := range perksJSON {
 			spell.Perks[i] = domain.SpellPerk{
 				TypeKey: p.PerkType.Key,
 				Value:   p.Value,

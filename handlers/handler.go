@@ -81,7 +81,12 @@ func (h *Handler) renderErrorPage(w http.ResponseWriter, r *http.Request, status
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
 
-	components.Error(title, message, status).Render(r.Context(), w)
+	err := components.Error(title, message, status).Render(r.Context(), w)
+	if err != nil {
+		h.Log.Error("render error page", "error", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
 
 // HandleHealth provides a minimal liveness/readiness check.

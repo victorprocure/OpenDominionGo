@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Postgres driver
 	"github.com/victorprocure/opendominiongo/internal/config"
 )
 

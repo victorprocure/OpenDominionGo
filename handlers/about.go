@@ -7,5 +7,10 @@ import (
 )
 
 func (h *Handler) HandleAbout(w http.ResponseWriter, r *http.Request) {
-	components.About().Render(r.Context(), w)
+	err := components.About().Render(r.Context(), w)
+	if err != nil {
+		h.Log.Error("render about", "error", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }

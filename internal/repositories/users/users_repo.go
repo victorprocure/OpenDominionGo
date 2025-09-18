@@ -16,16 +16,16 @@ var getUsersSQL string
 //go:embed sql/upsert_user.sql
 var upsertUserSQL string
 
-type UsersRepo struct {
+type Repo struct {
 	db  *sql.DB
 	log *slog.Logger
 }
 
-func NewUsersRepo(db *sql.DB, log *slog.Logger) *UsersRepo {
-	return &UsersRepo{db: db, log: log}
+func NewUsersRepo(db *sql.DB, log *slog.Logger) *Repo {
+	return &Repo{db: db, log: log}
 }
 
-func (r *UsersRepo) UpsertUserContext(ctx context.Context, tx repositories.DbTx, u *domain.User) error {
+func (r *Repo) UpsertContext(ctx context.Context, tx repositories.DbTx, u *domain.User) error {
 	args := fromDomain(u)
 	err := tx.QueryRowContext(ctx, upsertUserSQL, args...).Scan()
 	if err != nil {
@@ -35,7 +35,7 @@ func (r *UsersRepo) UpsertUserContext(ctx context.Context, tx repositories.DbTx,
 	return nil
 }
 
-func (r *UsersRepo) GetAllUsersContext(ctx context.Context, tx repositories.DbTx) ([]*domain.User, error) {
+func (r *Repo) GetAllUsersContext(ctx context.Context, tx repositories.DbTx) ([]*domain.User, error) {
 	rows, err := tx.QueryContext(ctx, getUsersSQL)
 	if err != nil {
 		return nil, err
@@ -53,11 +53,11 @@ func (r *UsersRepo) GetAllUsersContext(ctx context.Context, tx repositories.DbTx
 
 	return users, rows.Err()
 }
-func (r *UsersRepo) GetAllUsers() ([]*domain.User, error) {
+func (r *Repo) GetAllUsers() ([]*domain.User, error) {
 	return r.GetAllUsersContext(context.Background(), r.db)
 }
 
-func (r *UsersRepo) GetUserByIdContext(ctx context.Context, tx repositories.DbTx, i int) (*domain.User, error) {
+func (r *Repo) GetUserByIDContext(ctx context.Context, tx repositories.DbTx, i int) (*domain.User, error) {
 	row := tx.QueryRowContext(ctx, getUsersSQL+"WHERE id = $1", i)
 	u, err := scanUserRow(row)
 	if err != nil {
@@ -65,11 +65,11 @@ func (r *UsersRepo) GetUserByIdContext(ctx context.Context, tx repositories.DbTx
 	}
 	return toDomain(u), nil
 }
-func (r *UsersRepo) GetUserById(id int) (*domain.User, error) {
-	return r.GetUserByIdContext(context.Background(), r.db, id)
+func (r *Repo) GetUserByID(id int) (*domain.User, error) {
+	return r.GetUserByIDContext(context.Background(), r.db, id)
 }
 
-func (r *UsersRepo) GetUserByEmailContext(ctx context.Context, tx repositories.DbTx, e string) (*domain.User, error) {
+func (r *Repo) GetUserByEmailContext(ctx context.Context, tx repositories.DbTx, e string) (*domain.User, error) {
 	row := tx.QueryRowContext(ctx, getUsersSQL+"WHERE email = $1", e)
 	u, err := scanUserRow(row)
 
@@ -78,13 +78,13 @@ func (r *UsersRepo) GetUserByEmailContext(ctx context.Context, tx repositories.D
 	}
 	return toDomain(u), nil
 }
-func (r *UsersRepo) GetUserByEmail(e string) (*domain.User, error) {
+func (r *Repo) GetUserByEmail(e string) (*domain.User, error) {
 	return r.GetUserByEmailContext(context.Background(), r.db, e)
 }
 
 func scanUserRow(s repositories.RowScanner) (*userRow, error) {
 	var u userRow
-	if err := s.Scan(&u.Id,
+	if err := s.Scan(&u.ID,
 		&u.Activated, &u.ActivationCode, &u.Avatar,
 		&u.CreatedAt, &u.DisplayName,
 		&u.Email, &u.IsDeleted, &u.LastOnline,
