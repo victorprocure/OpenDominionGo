@@ -148,12 +148,13 @@ func getRaceFromFile(n string) (*dto.RaceYaml, error) {
 }
 
 func assignTypesToUnits(r *dto.RaceYaml) {
-	for i, v := range r.Units {
+	for i := range r.Units {
 		position := i + 1
 		slot := fmt.Sprintf("%d", position)
-		v.Slot = slot
-		if v.Type == "" {
-			v.Type = domain.DefaultUnitTypes[position]
+
+		r.Units[i].Slot = slot
+		if r.Units[i].Type == "" {
+			r.Units[i].Type = domain.DefaultUnitTypes[position]
 		}
 	}
 }
