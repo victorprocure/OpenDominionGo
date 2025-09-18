@@ -1,0 +1,130 @@
+package users
+
+import (
+	"context"
+	"database/sql"
+	_ "embed"
+	"log/slog"
+
+	"github.com/victorprocure/opendominiongo/internal/domain"
+	"github.com/victorprocure/opendominiongo/internal/repositories"
+)
+
+//go:embed sql/get_users.sql
+var getUsersSQL string
+
+//go:embed sql/upsert_user.sql
+var upsertUserSQL string
+
+type UsersRepo struct {
+	db  *sql.DB
+	log *slog.Logger
+}
+
+func NewUsersRepo(db *sql.DB, log *slog.Logger) *UsersRepo {
+	return &UsersRepo{db: db, log: log}
+}
+
+func (r *UsersRepo) CreateOrUpdateUserContext(ctx context.Context, tx repositories.DbTx, u *domain.User) error {
+	args := fromDomain(u)
+	err := tx.QueryRowContext(ctx, upsertUserSQL, args...).Scan()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *UsersRepo) GetAllUsersContext(ctx context.Context, tx repositories.DbTx) ([]*domain.User, error) {
+	rows, err := tx.QueryContext(ctx, getUsersSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*domain.User
+	for rows.Next() {
+		u, err := scanUserRow(rows)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, toDomain(u))
+	}
+
+	return users, rows.Err()
+}
+func (r *UsersRepo) GetAllUsers() ([]*domain.User, error) {
+	return r.GetAllUsersContext(context.Background(), r.db)
+}
+
+func (r *UsersRepo) GetUserByIdContext(ctx context.Context, tx repositories.DbTx, i int) (*domain.User, error) {
+	row := tx.QueryRowContext(ctx, getUsersSQL+"WHERE id = $1", i)
+	u, err := scanUserRow(row)
+	if err != nil {
+		return nil, err
+	}
+	return toDomain(u), nil
+}
+func (r *UsersRepo) GetUserById(id int) (*domain.User, error) {
+	return r.GetUserByIdContext(context.Background(), r.db, id)
+}
+
+func (r *UsersRepo) GetUserByEmailContext(ctx context.Context, tx repositories.DbTx, e string) (*domain.User, error) {
+	row := tx.QueryRowContext(ctx, getUsersSQL+"WHERE email = $1", e)
+	u, err := scanUserRow(row)
+
+	if err != nil {
+		return nil, err
+	}
+	return toDomain(u), nil
+}
+func (r *UsersRepo) GetUserByEmail(e string) (*domain.User, error) {
+	return r.GetUserByEmailContext(context.Background(), r.db, e)
+}
+
+func scanUserRow(s repositories.RowScanner) (*userRow, error) {
+	var u userRow
+	if err := s.Scan(&u.Id,
+		&u.Activated, &u.ActivationCode, &u.Avatar,
+		&u.CreatedAt, &u.DisplayName,
+		&u.Email, &u.IsDeleted, &u.LastOnline,
+		&u.MessageBoardLastRead, &u.PasswordHash,
+		&u.Rating, &u.RememberToken, &u.Settings,
+		&u.Skin, &u.UpdatedAt,
+	); err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func toDomain(r *userRow) *domain.User {
+	return &domain.User{
+		Activated:            r.Activated,
+		Avatar:               r.Avatar,
+		DisplayName:          r.DisplayName,
+		Email:                r.Email,
+		IsDeleted:            r.IsDeleted,
+		LastOnline:           r.LastOnline,
+		MessageBoardLastRead: r.MessageBoardLastRead,
+		PasswordHash:         r.PasswordHash,
+		Rating:               r.Rating,
+		Settings:             r.Settings,
+		Skin:                 r.Skin,
+	}
+}
+
+func fromDomain(u *domain.User) []any {
+	return []any{
+		u.Activated,
+		u.Avatar,
+		u.DisplayName,
+		u.Email,
+		u.LastOnline,
+		u.MessageBoardLastRead,
+		u.PasswordHash,
+		u.Rating,
+		u.Settings,
+		u.Skin,
+	}
+}
