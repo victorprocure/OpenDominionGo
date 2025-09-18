@@ -11,55 +11,48 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type BoolDefaultTrue struct {
-	v *bool
+type DefaultTrueBool struct {
+	Value bool
+	Valid bool
 }
 
-func NewBoolDefaultTrue(v bool) BoolDefaultTrue {
-	return BoolDefaultTrue{v: &v}
+func NewDefaultTrueBool(v bool) DefaultTrueBool {
+	return DefaultTrueBool{Value: v, Valid: true}
 }
 
-func (b BoolDefaultTrue) Bool() bool {
-	if b.v == nil {
+func (b DefaultTrueBool) OrDefault() bool {
+	if !b.Valid {
 		return true
 	}
-
-	return *b.v
+	return b.Value
 }
 
-func (b BoolDefaultTrue) OrDefault() bool {
-	if b.v == nil {
-		return true
-	}
-
-	return *b.v
-}
-
-func (b BoolDefaultTrue) MarshalJSON() ([]byte, error) {
+func (b DefaultTrueBool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(b.OrDefault())
 }
-func (b *BoolDefaultTrue) UnmarshalJSON(data []byte) error {
-	// null => default true
+func (b *DefaultTrueBool) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
-		b.v = nil
+		b.Value = false
+		b.Valid = false
 		return nil
 	}
 	var v bool
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
-	b.v = &v
+	b.Value = v
+	b.Valid = true
 	return nil
 }
 
-func (b BoolDefaultTrue) MarshalYAML() (any, error) {
+func (b DefaultTrueBool) MarshalYAML() (any, error) {
 	return b.OrDefault(), nil
 }
 
-func (b *BoolDefaultTrue) UnmarshalYAML(n *yaml.Node) error {
-	// if key is absent, this method won't be called and v stays nil (defaulting to true now)
+func (b *DefaultTrueBool) UnmarshalYAML(n *yaml.Node) error {
 	if n == nil || n.Kind == 0 {
-		b.v = nil
+		b.Valid = false
+		b.Value = false
 		return nil
 	}
 
@@ -68,7 +61,8 @@ func (b *BoolDefaultTrue) UnmarshalYAML(n *yaml.Node) error {
 		return err
 	}
 
-	b.v = &v
+	b.Value = v
+	b.Valid = true
 	return nil
 }
 

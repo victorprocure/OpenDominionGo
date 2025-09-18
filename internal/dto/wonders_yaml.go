@@ -7,5 +7,5 @@ type WondersYaml struct {
 	Name   string                  `yaml:"name" json:"name"`
 	Perks  KeyValues               `yaml:"perks" json:"perks"`
 	Power  int                     `yaml:"power" json:"power"`
-	Active helpers.BoolDefaultTrue `yaml:"active" json:"active"`
+	Active helpers.DefaultTrueBool `yaml:"active" json:"active"`
 }

@@ -11,6 +11,6 @@ type SpellYaml struct {
 	Duration     int                     `yaml:"duration,omitempty"`
 	Cooldown     int                     `yaml:"cooldown,omitempty"`
 	Races        []string                `yaml:"races,omitempty"`
-	Active       helpers.BoolDefaultTrue `yaml:"active"`
+	Active       helpers.DefaultTrueBool `yaml:"active"`
 	Perks        KeyValues               `yaml:"perks"`
 }
