@@ -112,10 +112,8 @@ func (s *RacesSync) syncRace(ctx context.Context, tx repositories.DbTx, r *dto.R
 	return nil
 }
 
-// (perk conversion consolidated in internal/helpers/perks.go)
-
-func getRaceFromFile(n string) (*dto.RaceYaml, error) {
-	b, err := racesFS.ReadFile(racesDir + "/" + n)
+func getRaceFromFile(f string) (*dto.RaceYaml, error) {
+	b, err := racesFS.ReadFile(f)
 	if err != nil {
 		return nil, err
 	}
