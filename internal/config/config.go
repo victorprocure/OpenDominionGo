@@ -1,6 +1,7 @@
 package config
 
 import (
+	"maps"
 	"fmt"
 	"os"
 	"strconv"
@@ -34,8 +35,24 @@ type AppConfig struct {
 // Load reads configuration from .env files and environment variables.
 // Order of precedence: env vars > .env.local > .env
 func Load() (*AppConfig, error) {
-	// Load .env and .env.local if present (but do not override actual env)
-	_ = godotenv.Overload() // Overload ensures later files override earlier values
+	// Load .env and .env.local if present. Behavior:
+	//  - Real environment variables always win (they are not overwritten)
+	//  - .env.local overrides values from .env
+	// We read both files into maps and set environment variables only when
+	// the key is not already present in the actual environment.
+	envMap := map[string]string{}
+	if m, err := godotenv.Read(".env"); err == nil {
+		maps.Copy(envMap, m)
+	}
+	if m, err := godotenv.Read(".env.local"); err == nil {
+		// .env.local overrides .env
+		maps.Copy(envMap, m)
+	}
+	for k, v := range envMap {
+		if _, ok := os.LookupEnv(k); !ok {
+			_ = os.Setenv(k, v)
+		}
+	}
 
 	cfg := &AppConfig{
 		DBUser:            getenv("DB_USER", "postgres"),
