@@ -8,71 +8,50 @@ import (
 	"os"
 	"time"
 
-	//"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"github.com/victorprocure/opendominiongo/handlers"
+	"github.com/victorprocure/opendominiongo/internal/config"
+	intdb "github.com/victorprocure/opendominiongo/internal/db"
 	"github.com/victorprocure/opendominiongo/session"
-	"github.com/victorprocure/opendominiongo/store"
 )
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stderr, nil))
-	config := store.Envs
-	cfg := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", config.DBUser, config.DBPassword, config.DBAddress, config.DBName)
-	db, err := store.NewSqlStorage(cfg, *log)
-	if err != nil {
-		log.Error("Error connecting to the database: ", slog.Any("error", err))
-		os.Exit(1)
-	}
-	defer db.Close()
 
-	s := store.NewStore(db, log)
-	initStore(s, log)
-	dataSync := initDataSync(s)
-	err = dataSync.RunDataSync(context.Background())
+	// Load configuration from .env and environment
+	cfg, err := config.Load()
 	if err != nil {
-		log.Error("Unable to perform data sync", slog.Any("error", err))
+		log.Error("config load", slog.Any("error", err))
 		os.Exit(1)
 	}
 
-	spells, err := s.GetSpellsByRaceKey("human")
+	// Open DB with pooling
+	sqldb, err := intdb.OpenPostgres(context.Background(), cfg)
 	if err != nil {
-		log.Error("Unable to get spells", slog.Any("error", err))
+		log.Error("db open", slog.Any("error", err))
 		os.Exit(1)
 	}
-	log.Info("Here are all spells", slog.Any("spells", spells))
+	defer sqldb.Close()
 
-	handler := handlers.New(s, log)
-	secureFlag := config.SecureFlag
-	sessionHandler := session.NewMiddleware(handler, session.WithSecure(secureFlag))
+	// TODO: Wire application store/service layer to use sqldb
+	// For now, create handler with minimal dependencies
+	// If handlers require a store, refactor to accept interfaces using *sql.DB.
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OpenDominionGo is running"))
+	})
 
+	// Build the HTTP server
+	addr := fmt.Sprintf("localhost:%d", cfg.AppPort)
+	sessionHandler := session.NewMiddleware(handler, session.WithSecure(cfg.AppSecure))
 	server := &http.Server{
-		Addr: "localhost:" + config.Port,
-		Handler: sessionHandler,
-		ReadTimeout: time.Second * 10,
-		WriteTimeout: time.Second * 10,
+		Addr:         addr,
+		Handler:      sessionHandler,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
-	log.Info("Server is running", slog.Group("Config", slog.String("Server Address", server.Addr), slog.String("DB Address", config.DBAddress), slog.String("DB Name", config.DBName)))
-	server.ListenAndServe()
-}
-
-func initStore(db *store.Storage, log *slog.Logger) {
-	err := db.Ping()
-	if err != nil {
-		log.Error("Error pinging the database: ", slog.Any("error", err))
-		os.Exit(1)
+	log.Info("Server is running", slog.String("addr", server.Addr), slog.String("dsn", cfg.BuildPostgresDSN()))
+	if err := server.ListenAndServe(); err != nil {
+		log.Error("server", slog.Any("error", err))
 	}
-	
-	log.Debug("Database connection established")
-}
-
-func initDataSync(db *store.Storage) *store.SyncCoordinator {
-	return store.NewSyncCoordinator(db, 
-		store.NewRacesSync(db),
-		store.NewSpellsSync(db),
-		store.NewTechSync(db),
-		store.NewWondersSync(db),
-		store.NewHeroUpgradeSync(db),
-	)
 }
