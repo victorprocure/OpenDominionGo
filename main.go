@@ -59,6 +59,7 @@ func main() {
 		appSvc.NewHeroUpgradeSync(),
 	); err != nil {
 		log.Error("initial sync failed", slog.Any("error", err))
+		cancel() // ensure context is cancelled
 		os.Exit(1)
 	}
 
