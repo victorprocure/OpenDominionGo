@@ -33,7 +33,13 @@ jobs:
       - name: Build CSS assets
         run: npm run build
       - name: Generate code (templ)
-        run: go generate ./...
+        run: |
+          set -e
+          go generate -tags=tools ./...
+          if ! ls components/*_templ.go >/dev/null 2>&1; then
+            echo "No *_templ.go files found; invoking templ directly as fallback"
+            go run github.com/a-h/templ/cmd/templ@v0.3.943 generate
+          fi
       - name: Build
         run: go build ./...
       - name: Test
