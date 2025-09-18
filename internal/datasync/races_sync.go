@@ -70,10 +70,9 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 		perks[kv.Key] = kv.Value
 	}
 	units := make([]races.UnitUpsertArg, 0, len(r.Units))
-	for i, u := range r.Units {
-		position := i + 1
+	for _, u := range r.Units {
 		units = append(units, races.UnitUpsertArg{
-			Slot:         fmt.Sprintf("%d", position),
+			Slot:         u.Slot,
 			Name:         u.Name,
 			Type:         u.Type,
 			NeedBoat:     u.NeedBoat,
@@ -151,6 +150,8 @@ func getRaceFromFile(n string) (*dto.RaceYaml, error) {
 func assignTypesToUnits(r *dto.RaceYaml) {
 	for i, v := range r.Units {
 		position := i + 1
+		slot := fmt.Sprintf("%d", position)
+		v.Slot = slot
 		if v.Type == "" {
 			v.Type = domain.DefaultUnitTypes[position]
 		}

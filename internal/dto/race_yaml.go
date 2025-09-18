@@ -18,6 +18,7 @@ type RaceYaml struct {
 		Name     string    `yaml:"name" json:"name"`
 		Perks    KeyValues `yaml:"perks,omitempty" json:"perks,omitempty"`
 		NeedBoat bool      `yaml:"need_boat,omitempty" json:"need_boat,omitempty"`
+		Slot     string   `yaml:"slot,omitempty" json:"slot,omitempty"`
 		Type     string    `yaml:"type" json:"type"`
 		Cost     struct {
 			Platinum int `yaml:"platinum,omitempty" json:"platinum,omitempty"`
