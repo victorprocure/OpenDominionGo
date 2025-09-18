@@ -9,6 +9,8 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/victorprocure/opendominiongo/handlers"
+	"github.com/victorprocure/opendominiongo/internal/app"
 	"github.com/victorprocure/opendominiongo/internal/config"
 	intdb "github.com/victorprocure/opendominiongo/internal/db"
 	"github.com/victorprocure/opendominiongo/session"
@@ -32,13 +34,9 @@ func main() {
 	}
 	defer sqldb.Close()
 
-	// TODO: Wire application store/service layer to use sqldb
-	// For now, create handler with minimal dependencies
-	// If handlers require a store, refactor to accept interfaces using *sql.DB.
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OpenDominionGo is running"))
-	})
+	// Build application service and handlers
+	appSvc := app.New(sqldb, log)
+	handler := handlers.New(appSvc, log)
 
 	// Build the HTTP server
 	addr := fmt.Sprintf("localhost:%d", cfg.AppPort)

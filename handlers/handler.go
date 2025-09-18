@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/victorprocure/opendominiongo/components"
-	"github.com/victorprocure/opendominiongo/store"
+	"github.com/victorprocure/opendominiongo/internal/app"
 )
 
-func New(store *store.Storage, log *slog.Logger) *Handler {
+func New(a *app.App, log *slog.Logger) *Handler {
 	h := &Handler{
-		store: store,
-		Log:   log,
+		app: a,
+		Log: log,
 	}
 
 	mux := http.NewServeMux()
@@ -29,9 +29,9 @@ func New(store *store.Storage, log *slog.Logger) *Handler {
 }
 
 type Handler struct {
-	store *store.Storage
-	Log   *slog.Logger
-	mux   *http.ServeMux
+	app *app.App
+	Log *slog.Logger
+	mux *http.ServeMux
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
