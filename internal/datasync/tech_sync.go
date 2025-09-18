@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"io/fs"
 	"log/slog"
-	"path"
 	"sort"
 	"strings"
 
 	"github.com/victorprocure/opendominiongo/internal/domain"
 	"github.com/victorprocure/opendominiongo/internal/dto"
+	"github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/tech"
@@ -85,7 +85,7 @@ func (s *TechSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) er
 }
 
 func getTechsFromFS() ([]dto.TechYaml, error) {
-	entries, err := getYmlImportFiles()
+	entries, err := yamlutil.GetYmlImportFiles(techsFS, techsDir)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get tech files from fs: %w", err)
 	}
@@ -106,20 +106,4 @@ func getTechsFromFS() ([]dto.TechYaml, error) {
 	}
 
 	return techs, nil
-}
-
-func getYmlImportFiles() ([]string, error) {
-	var files []string
-	for _, pat := range []string{
-		path.Join(techsDir, "*.yml"),
-		path.Join(techsDir, "*.yaml"),
-	} {
-		matches, err := fs.Glob(techsFS, pat)
-		if err != nil {
-			return nil, fmt.Errorf("glob techs dir: %s, pattern: %s, error: %w", techsDir, pat, err)
-		}
-		files = append(files, matches...)
-	}
-	sort.Strings(files)
-	return files, nil
 }

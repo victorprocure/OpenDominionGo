@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/victorprocure/opendominiongo/helpers"
+import "github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
 
 type RaceYaml struct {
 	Key                 string                  `yaml:"key" json:"key"`
@@ -13,7 +13,7 @@ type RaceYaml struct {
 	OverallDifficulty   int                     `yaml:"overall_difficulty" json:"overall_difficulty"`
 	HomeLandType        string                  `yaml:"home_land_type" json:"home_land_type"`
 	Perks               KeyValues               `yaml:"perks,omitempty" json:"perks,omitempty"`
-	Playable            helpers.DefaultTrueBool `yaml:"playable" json:"playable"`
+	Playable            yamlutil.DefaultTrueBool `yaml:"playable" json:"playable"`
 	Units               []struct {
 		Name     string    `yaml:"name" json:"name"`
 		Perks    KeyValues `yaml:"perks,omitempty" json:"perks,omitempty"`

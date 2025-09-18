@@ -6,13 +6,12 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log/slog"
 
-	"github.com/victorprocure/opendominiongo/helpers"
 	"github.com/victorprocure/opendominiongo/internal/domain"
 	"github.com/victorprocure/opendominiongo/internal/dto"
-	perkshelper "github.com/victorprocure/opendominiongo/internal/helpers"
+	"github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
+	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 	"github.com/victorprocure/opendominiongo/internal/repositories/races"
 	"gopkg.in/yaml.v3"
@@ -37,24 +36,19 @@ func (s *RacesSync) Name() string {
 }
 
 func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) error {
-	entries, err := fs.ReadDir(racesFS, racesDir)
+	entries, err := yamlutil.GetYmlImportFiles(racesFS, racesDir)
 	if err != nil {
 		return err
 	}
 
-	for _, e := range entries {
-		name, valid, _ := helpers.IsValidYamlFileName(e)
-		if !valid {
-			continue
-		}
-
-		r, err := getRaceFromFile(name)
+	for _, fn := range entries {
+		r, err := getRaceFromFile(fn)
 		if err != nil {
-			return fmt.Errorf("read race file %s: %w", name, err)
+			return fmt.Errorf("read race file %s: %w", fn, err)
 		}
 
 		// Log the race key we're about to upsert for visibility
-		s.log.Info("upserting race", slog.String("file", name), slog.String("race_key", r.Key))
+		s.log.Info("upserting race", slog.String("file", fn), slog.String("race_key", r.Key))
 
 		if err := s.syncRace(r, ctx, tx); err != nil {
 			return fmt.Errorf("sync race %s: %w", r.Key, err)
@@ -66,7 +60,7 @@ func (s *RacesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) e
 
 func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositories.DbTx) error {
 	// map DTO -> repo wrapper
-	perks := perkshelper.PerksToMap(r.Perks)
+	perks := helpers.PerksToMap(r.Perks)
 	units := make([]races.UnitUpsertArg, 0, len(r.Units))
 	for _, u := range r.Units {
 		units = append(units, races.UnitUpsertArg{
@@ -81,7 +75,7 @@ func (s *RacesSync) syncRace(r *dto.RaceYaml, ctx context.Context, tx repositori
 			CostMana:     u.Cost.Mana,
 			PowerOffense: u.Power.Offense,
 			PowerDefense: u.Power.Defense,
-			Perks:        perkshelper.PerksToMap(u.Perks),
+			Perks:        helpers.PerksToMap(u.Perks),
 		})
 	}
 	// optional description handling

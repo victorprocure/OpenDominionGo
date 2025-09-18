@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/victorprocure/opendominiongo/helpers"
+import "github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
 
 // HeroUpgradeYaml represents a single hero upgrade item from YAML.
 // It is expected to be loaded from a mapping of key -> HeroUpgradeYaml.
@@ -11,6 +11,6 @@ type HeroUpgradeYaml struct {
 	Type    string                      `yaml:"type" json:"type"`
 	Icon    string                      `yaml:"icon" json:"icon"`
 	Perks   KeyValues                   `yaml:"perks" json:"perks"`
-	Active  helpers.DefaultTrueBool     `yaml:"active,omitempty" json:"active"`
-	Classes helpers.CommaDelimitedArray `yaml:"classes,omitempty" json:"classes"`
+	Active  yamlutil.DefaultTrueBool     `yaml:"active,omitempty" json:"active"`
+	Classes yamlutil.CommaDelimitedArray `yaml:"classes,omitempty" json:"classes"`
 }
