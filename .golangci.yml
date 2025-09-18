@@ -1,0 +1,25 @@
+run:
+  timeout: 3m
+  tests: true
+linters:
+  enable:
+    - govet
+    - staticcheck
+    - gofumpt
+    - ineffassign
+    - gosimple
+    - gocritic
+    - errcheck
+    - unused
+    - revive
+  disable:
+    - depguard
+linters-settings:
+  gofumpt:
+    extra-rules: true
+issues:
+  exclude-rules:
+    - path: _templ\.go$
+      linters: [gofumpt, revive]
+    - path: components/.*
+      linters: [gofumpt, revive]

@@ -28,8 +28,9 @@ type AppConfig struct {
 	DBConnMaxIdleTime time.Duration // default 10m
 
 	// App
-	AppPort   int  // default 8080
-	AppSecure bool // session cookie secure flag
+	AppPort   int    // default 8080
+	AppSecure bool   // session cookie secure flag
+	AppCSP    string // optional override for Content-Security-Policy
 }
 
 // Load reads configuration from .env files and environment variables.
@@ -67,6 +68,7 @@ func Load() (*AppConfig, error) {
 		DBConnMaxIdleTime: getduration("DB_CONN_MAX_IDLE_TIME", 10*time.Minute),
 		AppPort:           getint("APP_PORT", 8080),
 		AppSecure:         getbool("APP_SECURE", false),
+		AppCSP:            getenv("APP_CSP", ""),
 	}
 	return cfg, nil
 }

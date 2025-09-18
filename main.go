@@ -16,6 +16,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/config"
 	"github.com/victorprocure/opendominiongo/internal/datasync"
 	intdb "github.com/victorprocure/opendominiongo/internal/db"
+	"github.com/victorprocure/opendominiongo/internal/middleware"
 	"github.com/victorprocure/opendominiongo/session"
 )
 
@@ -59,10 +60,25 @@ func main() {
 
 	// Build the HTTP server
 	addr := fmt.Sprintf("localhost:%d", cfg.AppPort)
-	sessionHandler := session.NewMiddleware(handler, session.WithSecure(cfg.AppSecure))
+	// Compose middlewares: logging -> security headers -> session -> handlers
+	// Build security header options, allowing override via config
+	shOpts := []middleware.SecurityOption{
+		middleware.WithHSTS(false, ""), // enable in TLS/production only
+	}
+	if cfg.AppCSP != "" {
+		shOpts = append(shOpts, middleware.WithCSP(cfg.AppCSP))
+	}
+	chain := middleware.WithRequestID(
+		middleware.RequestLogger(log,
+			middleware.SecurityHeaders(
+				session.NewMiddleware(handler, session.WithSecure(cfg.AppSecure)),
+				shOpts...,
+			),
+		),
+	)
 	server := &http.Server{
 		Addr:              addr,
-		Handler:           sessionHandler,
+		Handler:           chain,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
 		IdleTimeout:       120 * time.Second,
