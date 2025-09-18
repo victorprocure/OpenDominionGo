@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"path"
 	"sort"
+	"strings"
 
 	"github.com/victorprocure/opendominiongo/internal/domain"
 	"github.com/victorprocure/opendominiongo/internal/dto"
@@ -47,22 +48,35 @@ func (s *TechSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) er
 			active = true
 		}
 
-		for key, t := range tp.Techs {
+		// Iterate techs in deterministic key order
+		keys := make([]string, 0, len(tp.Techs))
+		for k := range tp.Techs {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			t := tp.Techs[key]
 			// Determine effective active flag once per tech
 			effActive := active
 			if t.Active != nil {
 				effActive = *t.Active
 			}
+			// Normalize at sync boundary
+			perks := make(map[string]string, len(t.Perks))
+			for _, kv := range t.Perks {
+				perks[kv.Key] = kv.Value
+			}
+			prereq := strings.Join(t.Prerequisites, ",")
 			// Upsert tech and its perks via normalized wrapper
 			_, err := s.db.UpsertTechFromSyncContext(ctx, tx, tech.TechUpsertArgs{
 				Key:           key,
 				Name:          t.Name,
-				Prerequisites: t.Prerequisites,
+				Prerequisites: prereq,
 				Active:        effActive,
 				Version:       currentVersion,
 				X:             t.X,
 				Y:             t.Y,
-				Perks:         t.Perks,
+				Perks:         perks,
 			})
 			if err != nil {
 				return fmt.Errorf("upsert tech %s: %w", key, err)

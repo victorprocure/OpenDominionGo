@@ -7,9 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"strings"
 
-	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
@@ -29,18 +27,17 @@ var upsertTechWithPerksSQL string
 type TechUpsertArgs struct {
 	Key           string
 	Name          string
-	Prerequisites []string
+	Prerequisites string
 	Active        bool
 	Version       int
 	X             int
 	Y             int
-	Perks         dto.KeyValues
+	Perks         map[string]string
 }
 
 // UpsertTechFromSyncContext upserts one tech row and its child perks/types using a single SQL statement.
 // Returns the tech id.
 func (r *TechRepo) UpsertTechFromSyncContext(ctx context.Context, tx repositories.DbTx, a TechUpsertArgs) (int, error) {
-	// Marshal perks to JSON (object mapping preserving order via dto.KeyValues MarshalJSON)
 	var perksJSON []byte
 	if len(a.Perks) > 0 {
 		b, err := json.Marshal(a.Perks)
@@ -50,16 +47,13 @@ func (r *TechRepo) UpsertTechFromSyncContext(ctx context.Context, tx repositorie
 		perksJSON = b
 	}
 
-	// Join prerequisites as comma-delimited text (adjust if DB expects text[])
-	prereq := strings.Join(a.Prerequisites, ",")
-
 	var techID int
 	err := tx.QueryRowContext(
 		ctx,
 		upsertTechWithPerksSQL,
 		a.Key,
 		a.Name,
-		prereq,
+		a.Prerequisites,
 		a.Active,
 		a.Version,
 		a.X,

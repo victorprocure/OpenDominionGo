@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
 
@@ -34,7 +33,7 @@ type HeroUpgradeUpsertArgs struct {
 	Icon    string
 	Classes *string
 	Active  bool
-	Perks   dto.KeyValues
+	Perks   map[string]string
 }
 
 func (r *HeroesRepo) UpsertHeroUpgradeFromSyncContext(ctx context.Context, tx repositories.DbTx, a HeroUpgradeUpsertArgs) (int, error) {

@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"fmt"
 	"log/slog"
+	"sort"
 
 	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
@@ -41,6 +42,11 @@ func (s *HeroesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 	for _, h := range hu {
 		// Build normalized repo args
 		classes := h.Classes.ToString()
+		// Convert perks from dto.KeyValues to map[string]string at sync boundary
+		perks := make(map[string]string, len(h.Perks))
+		for _, kv := range h.Perks {
+			perks[kv.Key] = kv.Value
+		}
 		_, err := s.db.UpsertHeroUpgradeFromSyncContext(ctx, tx, heroes.HeroUpgradeUpsertArgs{
 			Key:     h.Key,
 			Name:    h.Name,
@@ -49,7 +55,7 @@ func (s *HeroesSync) PerformDataSync(ctx context.Context, tx repositories.DbTx) 
 			Icon:    h.Icon,
 			Classes: &classes,
 			Active:  h.Active.OrDefault(),
-			Perks:   h.Perks,
+			Perks:   perks,
 		})
 		if err != nil {
 			return fmt.Errorf("upsert hero upgrade %s: %w", h.Key, err)
@@ -65,8 +71,15 @@ func (s *HeroesSync) getHeroUpgradesFromYaml() ([]dto.HeroUpgradeYaml, error) {
 		return nil, fmt.Errorf("unable to unmarshal heroes.yml: %w", err)
 	}
 
+	// Deterministic order by key
+	keys := make([]string, 0, len(byKey))
+	for k := range byKey {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 	hul := make([]dto.HeroUpgradeYaml, 0, len(byKey))
-	for k, v := range byKey {
+	for _, k := range keys {
+		v := byKey[k]
 		v.Key = k
 		hul = append(hul, v)
 	}
