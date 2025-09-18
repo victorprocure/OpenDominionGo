@@ -11,6 +11,6 @@ type HeroUpgradeYaml struct {
 	Type    string                      `yaml:"type" json:"type"`
 	Icon    string                      `yaml:"icon" json:"icon"`
 	Perks   KeyValues                   `yaml:"perks" json:"perks"`
-	Active  helpers.BoolDefaultTrue     `yaml:"active,omitempty" json:"active,omitempty"`
-	Classes helpers.CommaDelimitedArray `yaml:"classes,omitempty" json:"classes,omitempty"`
+	Active  helpers.BoolDefaultTrue     `yaml:"active,omitempty" json:"active"`
+	Classes helpers.CommaDelimitedArray `yaml:"classes,omitempty" json:"classes"`
 }

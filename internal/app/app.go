@@ -36,8 +36,8 @@ func New(db *sql.DB, log *slog.Logger) *App {
 }
 
 // Syncers constructors for main to use
-func (a *App) NewTechSync() interface{}        { return nil }
-func (a *App) NewRacesSync() interface{}       { return nil }
-func (a *App) NewSpellsSync() interface{}      { return nil }
-func (a *App) NewWondersSync() interface{}     { return nil }
-func (a *App) NewHeroUpgradeSync() interface{} { return nil }
+func (a *App) NewTechSync() any        { return nil }
+func (a *App) NewRacesSync() any       { return nil }
+func (a *App) NewSpellsSync() any      { return nil }
+func (a *App) NewWondersSync() any     { return nil }
+func (a *App) NewHeroUpgradeSync() any { return nil }
