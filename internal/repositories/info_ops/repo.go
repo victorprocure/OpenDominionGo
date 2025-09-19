@@ -50,7 +50,7 @@ type Row struct {
 	Data             string
 }
 
-func (r *Repo) ListByTargetDominionContext(ctx context.Context, tx repositories.DbTx, dominionID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByTargetDominionContext(ctx context.Context, tx repositories.DbTx, dominionID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listInfoOpsByTargetDominionSQL, dominionID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list info_ops: %w", err)

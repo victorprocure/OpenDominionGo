@@ -67,7 +67,7 @@ func (r *Repo) GetByIDContext(ctx context.Context, tx repositories.DbTx, id int)
 	return &ft, nil
 }
 
-func (r *Repo) ListByRoundContext(ctx context.Context, tx repositories.DbTx, roundID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByRoundContext(ctx context.Context, tx repositories.DbTx, roundID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listForumThreadsByRoundSQL, roundID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list forum threads: %w", err)
