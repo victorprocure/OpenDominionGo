@@ -10,7 +10,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonders"
+	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonder"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,7 +22,7 @@ type WondersSync struct {
 }
 
 func NewWondersSync(db *sql.DB, log *slog.Logger) *WondersSync {
-	return &WondersSync{db: wonderrepo.NewWondersRepo(db, log)}
+	return &WondersSync{db: wonderrepo.NewWonderRepo(db, log)}
 }
 
 func (s *WondersSync) Name() string {

@@ -10,7 +10,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/dto"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spells"
+	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spell"
 	"gopkg.in/yaml.v3"
 )
 
@@ -24,7 +24,7 @@ type SpellsSync struct {
 }
 
 func NewSpellsSync(db *sql.DB, log *slog.Logger) *SpellsSync {
-	return &SpellsSync{db: spellrepo.NewSpellsRepository(db, log)}
+	return &SpellsSync{db: spellrepo.NewSpellRepo(db, log)}
 }
 
 func (s *SpellsSync) Name() string {

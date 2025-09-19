@@ -13,7 +13,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/encoding/yamlutil"
 	"github.com/victorprocure/opendominiongo/internal/helpers"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
-	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/races"
+	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/race"
 	"gopkg.in/yaml.v3"
 )
 
@@ -28,7 +28,7 @@ type RacesSync struct {
 }
 
 func NewRacesSync(db *sql.DB, log *slog.Logger) *RacesSync {
-	return &RacesSync{db: racerepo.NewRacesRepository(db, log), log: log}
+	return &RacesSync{db: racerepo.NewRaceRepo(db, log), log: log}
 }
 
 func (s *RacesSync) Name() string {

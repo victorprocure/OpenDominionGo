@@ -6,10 +6,10 @@ import (
 
 	"github.com/victorprocure/opendominiongo/internal/datasync"
 	"github.com/victorprocure/opendominiongo/internal/repositories/hero/upgrade"
-	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/races"
-	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spells"
+	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/race"
+	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spell"
 	"github.com/victorprocure/opendominiongo/internal/repositories/tech"
-	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonders"
+	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonder"
 )
 
 // App holds repo instances and shared dependencies.
@@ -28,10 +28,10 @@ func New(db *sql.DB, log *slog.Logger) *App {
 	return &App{
 		DB:      db,
 		Log:     log,
-		Spells:  spellrepo.NewSpellsRepository(db, log),
+		Spells:  spellrepo.NewSpellRepo(db, log),
 		Tech:    tech.NewTechRepo(db, log),
-		Wonders: wonderrepo.NewWondersRepo(db, log),
-		Races:   racerepo.NewRacesRepository(db, log),
+		Wonders: wonderrepo.NewWonderRepo(db, log),
+		Races:   racerepo.NewRaceRepo(db, log),
 		Heroes:  upgrade.NewHeroUpgradeRepo(db, log),
 	}
 }
