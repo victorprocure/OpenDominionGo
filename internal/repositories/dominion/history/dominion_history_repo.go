@@ -1,4 +1,4 @@
-package dominion_history
+package history
 
 import (
 	"context"

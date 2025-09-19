@@ -1,4 +1,4 @@
-package role_has_permissions
+package permission
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewRoleHasPermissionsRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRoleHasPermissionRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type AssignArgs struct {
 	RoleID       int

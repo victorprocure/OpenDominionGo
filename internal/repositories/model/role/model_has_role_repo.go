@@ -1,4 +1,4 @@
-package model_has_roles
+package role
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewModelHasRolesRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewModelHasRoleRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type AssignArgs struct {
 	RoleID    int

@@ -1,4 +1,4 @@
-package model_has_permissions
+package permission
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewModelHasPermissionsRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewModelHasPermissionRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type AssignArgs struct {
 	PermissionID int
