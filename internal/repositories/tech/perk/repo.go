@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewTechPerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	TechID         int
@@ -44,7 +44,7 @@ type Row struct {
 	Value          string
 }
 
-func (r *Repo) ListByTechContext(ctx context.Context, tx repositories.DbTx, techID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByTechContext(ctx context.Context, tx repositories.DbTx, techID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listTechPerksByTechSQL, techID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list tech_perks: %w", err)

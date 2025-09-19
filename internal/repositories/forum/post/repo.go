@@ -46,7 +46,7 @@ type Row struct {
 	FlaggedBy         *string
 }
 
-func (r *Repo) ListByThreadContext(ctx context.Context, tx repositories.DbTx, threadID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByThreadContext(ctx context.Context, tx repositories.DbTx, threadID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listForumPostsByThreadSQL, threadID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list forum posts: %w", err)

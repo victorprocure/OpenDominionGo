@@ -29,7 +29,7 @@ type TechSync struct {
 }
 
 func NewTechSync(db *sql.DB, log *slog.Logger) *TechSync {
-	return &TechSync{db: tech.NewTechRepo(db, log)}
+	return &TechSync{db: tech.NewRepo(db, log)}
 }
 
 func (s *TechSync) Name() string {

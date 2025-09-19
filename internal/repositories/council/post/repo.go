@@ -45,7 +45,7 @@ type Row struct {
 	DeletedAt       sql.NullTime
 }
 
-func (r *Repo) ListByThreadContext(ctx context.Context, tx repositories.DbTx, threadID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByThreadContext(ctx context.Context, tx repositories.DbTx, threadID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listCouncilPostsByThreadSQL, threadID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list council_posts: %w", err)

@@ -23,7 +23,7 @@ type HeroesSync struct {
 }
 
 func NewHeroesSync(db *sql.DB, log *slog.Logger) *HeroesSync {
-	return &HeroesSync{db: upgrade.NewHeroUpgradeRepo(db, log)}
+	return &HeroesSync{db: upgrade.NewRepo(db, log)}
 }
 
 func (s *HeroesSync) Name() string {

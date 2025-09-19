@@ -66,12 +66,13 @@ func (r *Repo) GetByIDContext(ctx context.Context, tx repositories.DbTx, id int)
 	return &t, nil
 }
 
-func (r *Repo) ListByRealmContext(ctx context.Context, tx repositories.DbTx, realmID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByRealmContext(ctx context.Context, tx repositories.DbTx, realmID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listCouncilThreadsByRealmSQL, realmID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list council_threads: %w", err)
 	}
 	defer rows.Close()
+
 	var out []Row
 	for rows.Next() {
 		var t Row

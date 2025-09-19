@@ -50,7 +50,7 @@ type Row struct {
 	Device  sql.NullString
 }
 
-func (r *Repo) ListByUserContext(ctx context.Context, tx repositories.DbTx, userID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByUserContext(ctx context.Context, tx repositories.DbTx, userID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listUserActivitiesByUserSQL, userID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list user_activities: %w", err)

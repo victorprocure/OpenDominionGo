@@ -49,7 +49,7 @@ type Row struct {
 	Device     string
 }
 
-func (r *Repo) ListByDominionContext(ctx context.Context, tx repositories.DbTx, dominionID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByDominionContext(ctx context.Context, tx repositories.DbTx, dominionID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listDominionHistoryByDominionSQL, dominionID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list dominion_history: %w", err)

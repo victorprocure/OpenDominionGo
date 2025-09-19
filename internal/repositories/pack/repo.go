@@ -30,7 +30,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewPackRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	RoundID  int
@@ -56,7 +56,7 @@ type Row struct {
 	Size    int
 }
 
-func (r *Repo) GetByRoundAndNameContext(ctx context.Context, tx repositories.DbTx, roundID int, name string) (*Row, error) {
+func (r *Repo) GetByRoundAndNameContext(ctx context.Context, tx repositories.DbTx, roundID, name string) (*Row, error) {
 	var p Row
 	if err := tx.QueryRowContext(ctx, getPackByRoundAndNameSQL, roundID, name).
 		Scan(&p.ID, &p.RoundID, &p.RealmID, &p.Name, &p.Size); err != nil {
@@ -90,7 +90,7 @@ func (r *Repo) DeleteByIDContext(ctx context.Context, tx repositories.DbTx, id i
 	return nil
 }
 
-func (r *Repo) ListByRoundContext(ctx context.Context, tx repositories.DbTx, roundID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByRoundContext(ctx context.Context, tx repositories.DbTx, roundID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listPacksByRoundSQL, roundID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list packs: %w", err)

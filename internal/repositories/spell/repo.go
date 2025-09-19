@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/lib/pq"
 	"github.com/victorprocure/opendominiongo/internal/domain"
@@ -27,7 +28,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewSpellRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 
@@ -106,6 +107,21 @@ func (r *Repo) UpsertFromSyncContext(ctx context.Context, tx repositories.DbTx, 
 	}
 
 	return nil
+}
+
+type spellRow struct {
+	ID           int       `db:"id"`
+	Key          string    `db:"key"`
+	Name         string    `db:"name"`
+	Category     string    `db:"category"`
+	CostMana     float64   `db:"cost_mana"`
+	CostStrength float64   `db:"cost_strength"`
+	Duration     int       `db:"duration"`
+	Cooldown     int       `db:"cooldown"`
+	Active       bool      `db:"active"`
+	CreatedAt    time.Time `db:"created_at"`
+	UpdatedAt    time.Time `db:"updated_at"`
+	Races        []string  `db:"-"`
 }
 
 func scanOneSpellRow(s repositories.RowScanner) (*domain.Spell, error) {

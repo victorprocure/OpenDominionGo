@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewDominionJournalRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	RoundID    int
@@ -45,7 +45,7 @@ type Row struct {
 	CreatedAt  sql.NullTime
 }
 
-func (r *Repo) ListByRoundContext(ctx context.Context, tx repositories.DbTx, roundID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByRoundContext(ctx context.Context, tx repositories.DbTx, roundID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listDominionJournalsByRoundSQL, roundID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list dominion_journals: %w", err)

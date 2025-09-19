@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	DominionID int
@@ -49,7 +49,7 @@ type Row struct {
 	CombatRating int
 }
 
-func (r *Repo) ListByDominionContext(ctx context.Context, tx repositories.DbTx, dominionID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByDominionContext(ctx context.Context, tx repositories.DbTx, dominionID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listHeroesByDominionSQL, dominionID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list heroes: %w", err)

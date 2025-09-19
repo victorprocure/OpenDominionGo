@@ -18,7 +18,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewUnitPerkTypeRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type Row struct {
 	ID   int

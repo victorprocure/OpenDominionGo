@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewSpellPerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	SpellID         int
@@ -44,7 +44,7 @@ type Row struct {
 	Value           string
 }
 
-func (r *Repo) ListBySpellContext(ctx context.Context, tx repositories.DbTx, spellID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListBySpellContext(ctx context.Context, tx repositories.DbTx, spellID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listSpellPerksBySpellSQL, spellID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list spell_perks: %w", err)

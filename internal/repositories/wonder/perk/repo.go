@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewWonderPerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	WonderID         int
@@ -44,7 +44,7 @@ type Row struct {
 	Value            string
 }
 
-func (r *Repo) ListByWonderContext(ctx context.Context, tx repositories.DbTx, wonderID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByWonderContext(ctx context.Context, tx repositories.DbTx, wonderID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listWonderPerksByWonderSQL, wonderID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list wonder_perks: %w", err)

@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewValorRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type InsertArgs struct {
 	RoundID    int
@@ -51,7 +51,7 @@ type Row struct {
 	Amount     float64
 }
 
-func (r *Repo) ListByDominionContext(ctx context.Context, tx repositories.DbTx, dominionID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByDominionContext(ctx context.Context, tx repositories.DbTx, dominionID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listValorByDominionSQL, dominionID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list valor: %w", err)

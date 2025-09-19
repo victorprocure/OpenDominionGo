@@ -24,7 +24,7 @@ type SpellsSync struct {
 }
 
 func NewSpellsSync(db *sql.DB, log *slog.Logger) *SpellsSync {
-	return &SpellsSync{db: spellrepo.NewSpellRepo(db, log)}
+	return &SpellsSync{db: spellrepo.NewRepo(db, log)}
 }
 
 func (s *SpellsSync) Name() string {

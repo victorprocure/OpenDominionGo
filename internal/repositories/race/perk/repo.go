@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewRacePerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	RaceID         int
@@ -44,7 +44,7 @@ type Row struct {
 	Value          float64
 }
 
-func (r *Repo) ListByRaceContext(ctx context.Context, tx repositories.DbTx, raceID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByRaceContext(ctx context.Context, tx repositories.DbTx, raceID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listRacePerksByRaceSQL, raceID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list race_perks: %w", err)

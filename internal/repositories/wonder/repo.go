@@ -19,7 +19,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewWonderRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 

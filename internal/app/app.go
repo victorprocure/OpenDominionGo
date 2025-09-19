@@ -28,11 +28,11 @@ func New(db *sql.DB, log *slog.Logger) *App {
 	return &App{
 		DB:      db,
 		Log:     log,
-		Spells:  spellrepo.NewSpellRepo(db, log),
-		Tech:    tech.NewTechRepo(db, log),
-		Wonders: wonderrepo.NewWonderRepo(db, log),
-		Races:   racerepo.NewRaceRepo(db, log),
-		Heroes:  upgrade.NewHeroUpgradeRepo(db, log),
+		Spells:  spellrepo.NewRepo(db, log),
+		Tech:    tech.NewRepo(db, log),
+		Wonders: wonderrepo.NewRepo(db, log),
+		Races:   racerepo.NewRepo(db, log),
+		Heroes:  upgrade.NewRepo(db, log),
 	}
 }
 

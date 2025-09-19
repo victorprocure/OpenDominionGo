@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroTournamentBattleRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	HeroTournamentID int
@@ -44,7 +44,7 @@ type Row struct {
 	RoundNumber      int
 }
 
-func (r *Repo) ListByTournamentContext(ctx context.Context, tx repositories.DbTx, tournamentID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByTournamentContext(ctx context.Context, tx repositories.DbTx, tournamentID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listTournamentBattlesByTournamentSQL, tournamentID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list hero_tournament_battles: %w", err)

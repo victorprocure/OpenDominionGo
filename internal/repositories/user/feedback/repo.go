@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewUserFeedbackRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	SourceID int
@@ -44,7 +44,7 @@ type Row struct {
 	Endorsed bool
 }
 
-func (r *Repo) ListForTargetContext(ctx context.Context, tx repositories.DbTx, targetID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListForTargetContext(ctx context.Context, tx repositories.DbTx, targetID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listUserFeedbackForTargetSQL, targetID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list user_feedback: %w", err)

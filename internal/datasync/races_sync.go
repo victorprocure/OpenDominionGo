@@ -28,7 +28,7 @@ type RacesSync struct {
 }
 
 func NewRacesSync(db *sql.DB, log *slog.Logger) *RacesSync {
-	return &RacesSync{db: racerepo.NewRaceRepo(db, log), log: log}
+	return &RacesSync{db: racerepo.NewRepo(db, log), log: log}
 }
 
 func (s *RacesSync) Name() string {

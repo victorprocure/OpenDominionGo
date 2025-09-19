@@ -16,7 +16,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewTechRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 

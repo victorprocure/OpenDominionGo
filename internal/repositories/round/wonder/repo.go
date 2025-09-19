@@ -27,7 +27,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewRoundWonderRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 
@@ -46,7 +46,7 @@ func (r *Repo) InsertContext(ctx context.Context, tx repositories.DbTx, a Insert
 	return id, nil
 }
 
-func (r *Repo) UpdatePowerContext(ctx context.Context, tx repositories.DbTx, id int, power int) error {
+func (r *Repo) UpdatePowerContext(ctx context.Context, tx repositories.DbTx, id, power int) error {
 	if _, err := tx.ExecContext(ctx, updateRoundWonderPowerSQL, id, power); err != nil {
 		return fmt.Errorf("update round_wonder power: %w", err)
 	}

@@ -41,6 +41,7 @@ func (h *SlogHandler) Handle(ctx context.Context, r slog.Record) error {
 func (h *SlogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &SlogHandler{inner: h.inner.WithAttrs(attrs), svc: h.svc, level: h.level}
 }
+
 func (h *SlogHandler) WithGroup(name string) slog.Handler {
 	return &SlogHandler{inner: h.inner.WithGroup(name), svc: h.svc, level: h.level}
 }

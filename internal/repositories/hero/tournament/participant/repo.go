@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroTournamentParticipantRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 
@@ -49,7 +49,7 @@ type Row struct {
 	Eliminated       bool
 }
 
-func (r *Repo) ListByTournamentContext(ctx context.Context, tx repositories.DbTx, tournamentID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByTournamentContext(ctx context.Context, tx repositories.DbTx, tournamentID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listParticipantsByTournamentSQL, tournamentID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list hero_tournament_participants: %w", err)

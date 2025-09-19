@@ -22,7 +22,7 @@ type WondersSync struct {
 }
 
 func NewWondersSync(db *sql.DB, log *slog.Logger) *WondersSync {
-	return &WondersSync{db: wonderrepo.NewWonderRepo(db, log)}
+	return &WondersSync{db: wonderrepo.NewRepo(db, log)}
 }
 
 func (s *WondersSync) Name() string {

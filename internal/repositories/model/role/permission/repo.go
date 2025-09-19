@@ -24,7 +24,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewRoleHasPermissionRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type AssignArgs struct {
 	RoleID       int
@@ -45,7 +45,7 @@ func (r *Repo) RevokeContext(ctx context.Context, tx repositories.DbTx, a Assign
 	return nil
 }
 
-func (r *Repo) ListForRoleContext(ctx context.Context, tx repositories.DbTx, roleID int, limit, offset int) ([]int, error) {
+func (r *Repo) ListForRoleContext(ctx context.Context, tx repositories.DbTx, roleID, limit, offset int) ([]int, error) {
 	rows, err := tx.QueryContext(ctx, listPermissionsForRoleSQL, roleID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list permissions for role: %w", err)

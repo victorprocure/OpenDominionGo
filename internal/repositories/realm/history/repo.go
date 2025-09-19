@@ -47,7 +47,7 @@ type Row struct {
 	CreatedAt  sql.NullTime
 }
 
-func (r *Repo) ListByRealmContext(ctx context.Context, tx repositories.DbTx, realmID int, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByRealmContext(ctx context.Context, tx repositories.DbTx, realmID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listRealmHistoryByRealmSQL, realmID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list realm_history: %w", err)
