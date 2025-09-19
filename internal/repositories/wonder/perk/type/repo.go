@@ -1,4 +1,4 @@
-package perk_type
+package perktype
 
 import (
 	"context"
