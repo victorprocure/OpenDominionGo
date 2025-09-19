@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewSpellPerksRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewSpellPerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	SpellID         int

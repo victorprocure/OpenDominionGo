@@ -30,7 +30,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewAchievementsRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewAchievementRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	Name        *string

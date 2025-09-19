@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewUnitPerksRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewUnitPerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	RaceID         int

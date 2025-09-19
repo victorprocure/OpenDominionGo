@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewWonderPerksRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewWonderPerkRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	WonderID         int

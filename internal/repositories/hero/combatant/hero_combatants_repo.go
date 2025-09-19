@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroCombatantsRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
+func NewHeroCombatantRepo(db *sql.DB, log *slog.Logger) *Repo { return &Repo{db: db, log: log} }
 
 type CreateArgs struct {
 	HeroBattleID int

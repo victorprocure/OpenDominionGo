@@ -21,7 +21,7 @@ type Repo struct {
 	log *slog.Logger
 }
 
-func NewHeroTournamentParticipantsRepo(db *sql.DB, log *slog.Logger) *Repo {
+func NewHeroTournamentParticipantRepo(db *sql.DB, log *slog.Logger) *Repo {
 	return &Repo{db: db, log: log}
 }
 
