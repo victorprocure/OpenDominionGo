@@ -7,6 +7,7 @@ import (
 	"github.com/victorprocure/opendominiongo/internal/datasync"
 	"github.com/victorprocure/opendominiongo/internal/repositories/hero/upgrade"
 	racerepo "github.com/victorprocure/opendominiongo/internal/repositories/race"
+	roundrepo "github.com/victorprocure/opendominiongo/internal/repositories/round"
 	spellrepo "github.com/victorprocure/opendominiongo/internal/repositories/spell"
 	"github.com/victorprocure/opendominiongo/internal/repositories/tech"
 	wonderrepo "github.com/victorprocure/opendominiongo/internal/repositories/wonder"
@@ -21,6 +22,7 @@ type App struct {
 	Wonders *wonderrepo.Repo
 	Races   *racerepo.Repo
 	Heroes  *upgrade.Repo
+	Rounds  *roundrepo.Repo
 }
 
 // New creates an App by constructing repositories.
@@ -33,6 +35,7 @@ func New(db *sql.DB, log *slog.Logger) *App {
 		Wonders: wonderrepo.NewRepo(db, log),
 		Races:   racerepo.NewRepo(db, log),
 		Heroes:  upgrade.NewRepo(db, log),
+		Rounds:  roundrepo.NewRepo(db, log),
 	}
 }
 
