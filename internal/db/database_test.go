@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strconv"
 	"testing"
@@ -71,7 +70,7 @@ func TestMain(m *testing.M) {
 
 func TestNew(t *testing.T) {
 	p, _ := strconv.Atoi(port)
-	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: fmt.Sprintf("%t", false), })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", })
 	if srv == nil {
 		t.Fatal("New() returned nil")
 	}
@@ -79,7 +78,7 @@ func TestNew(t *testing.T) {
 
 func TestHealth(t *testing.T) {
 	p, _ := strconv.Atoi(port)
-	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: fmt.Sprintf("%t", false), })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", })
 	stats := srv.Health()
 
 	if stats["status"] != "up" {
@@ -97,7 +96,7 @@ func TestHealth(t *testing.T) {
 
 func TestClose(t *testing.T) {
 	p, _ := strconv.Atoi(port)
-	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: fmt.Sprintf("%t", false), })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", })
 	if srv.Close() != nil {
 		t.Fatalf("expected Close() to return nil")
 	}
