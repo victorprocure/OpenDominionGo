@@ -1,0 +1,19 @@
+package shared
+
+import "github.com/victorprocure/opendominiongo/cmd/web"
+
+templ Error(title, message string, status int) {
+    @web.Page(web.PageOpts{ShowNav: true, Title: title}) {
+        <main class="min-h-screen flex items-center justify-center px-4">
+			<div class="text-center max-w-xl">
+				<p class="text-sm font-medium text-zinc-500">{status}</p>
+				<h1 class="mt-2 text-3xl font-semibold text-zinc-900 dark:text-zinc-100">{title}</h1>
+				<p class="mt-2 text-zinc-600 dark:text-zinc-400">{message}</p>
+				<div class="mt-6 flex items-center justify-center gap-3">
+					<a class="px-4 py-2 rounded-md bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200" href="/">Go home</a>
+					<button class="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800" onclick="history.back()">Go back</button>
+				</div>
+			</div>
+		</main>
+    }
+}

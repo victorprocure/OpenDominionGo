@@ -1,0 +1,57 @@
+package web
+
+type PageOpts struct {
+    ShowNav bool
+    Title string
+}
+
+templ Page(opts PageOpts) {
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            if opts.Title != "" {
+                <title>{ opts.Title } | OpenDominion</title>
+            } else {
+                <title>OpenDominion</title>
+            }
+            <meta charset="UTF-8" />
+            <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png" />
+            <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png" />
+            <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png" />
+            <link rel="manifest" href="/assets/manifest.json" />
+            <link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5" />
+            <link rel="stylesheet" href="/assets/css/output.css" />
+            <script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
+        </head>
+        <body class="bg-white antialiased dark:bg-zinc-900">
+            if opts.ShowNav {
+                <header class="z-[120] max-w-full bg-zinc-500 transition-all duration-300 w-full grid grid-cols-12 gap-2 md:gap-6 xl:gap-12 px-2 md:px-3 xl:px-6 mx-auto py-4 lg:py-6">
+                    <div class="col-start-2 col-span-10 -ml-2 md:-ml-3 xl:-ml-6 -mr-2 md:mr-3 xl:-mr-6">
+                        <div class="flex flex-row justify-between gap-5">
+                            <div class="flex items-center">
+                                <a href="/">
+                                    <img class="select-none cursor-pointer ease-in-out duration-300 transition-all lg:w-[220px] w-30"
+                                         src="/assets/images/opendominion.png" alt="OpenDominion" title="Where power prevails" />
+                                </a>
+                            </div>
+                            <div class="flex items-center justify-end">
+                                <div class="hidden lg:block transition ease-in-out duration-300 translate-y-none transform">
+                                    <nav class="flex flex-col gap-12 text-center lg:flex-row lg:gap-7 text-light-gray text-b3-m md:text-b3 leading-b3-m md:leading-b3 tracking-b3-m md:tracking-b3 font-regular"
+                                         hx-trigger="load"
+                                         hx-get="/loadNavBar"
+                                         hx-swap="innerHTML">
+                                    </nav>
+                                </div>
+                            </div>
+                            <div class="flex flex-row items-center gap-3"
+                                 hx-trigger="load"
+                                 hx-get="/loadLoginRibbon">
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            }
+            { children... }
+        </body>
+    </html>
+}

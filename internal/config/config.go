@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"maps"
 	"os"
 	"strconv"
@@ -31,6 +32,7 @@ type AppConfig struct {
 	AppPort   int    // default 8080
 	AppSecure bool   // session cookie secure flag
 	AppCSP    string // optional override for Content-Security-Policy
+	Log       *slog.Logger
 }
 
 // Load reads configuration from .env files and environment variables.
@@ -56,7 +58,7 @@ func Load() (*AppConfig, error) {
 	}
 
 	cfg := &AppConfig{
-		DBUser:            getenv("DB_USER", "postgres"),
+		DBUser:            getenv("DB_USERNAME", "postgres"),
 		DBPassword:        getenv("DB_PASSWORD", ""),
 		DBHost:            getenv("DB_HOST", "localhost"),
 		DBPort:            getint("DB_PORT", 5432),
@@ -78,6 +80,7 @@ func Load() (*AppConfig, error) {
 func (c *AppConfig) BuildPostgresDSN() string {
 	user := urlEscape(c.DBUser)
 	pass := urlEscape(c.DBPassword)
+
 	host := c.DBHost
 	if c.DBPort > 0 {
 		host = fmt.Sprintf("%s:%d", c.DBHost, c.DBPort)
@@ -133,6 +136,7 @@ func urlEscape(s string) string {
 	r := strings.NewReplacer(
 		" ", "%20",
 		"#", "%23",
+		"%23", "%23",
 		"%", "%25",
 		"?", "%3F",
 		"/", "%2F",

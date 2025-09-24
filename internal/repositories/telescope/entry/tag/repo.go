@@ -1,12 +1,12 @@
 package tag
 
 import (
-	"context"
 	"database/sql"
 	_ "embed"
 	"fmt"
 	"log/slog"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
@@ -29,7 +29,7 @@ type CreateArgs struct {
 	Tag       string
 }
 
-func (r *Repo) CreateContext(ctx context.Context, tx repositories.DbTx, a CreateArgs) error {
+func (r *Repo) CreateContext(ctx *gin.Context, tx repositories.DbTx, a CreateArgs) error {
 	if _, err := tx.ExecContext(ctx, insertTelescopeEntryTagSQL, a.EntryUUID, a.Tag); err != nil {
 		return fmt.Errorf("insert telescope_entry_tag: %w", err)
 	}
@@ -41,7 +41,7 @@ type Row struct {
 	Tag       string
 }
 
-func (r *Repo) ListByEntryContext(ctx context.Context, tx repositories.DbTx, entryUUID uuid.UUID, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByEntryContext(ctx *gin.Context, tx repositories.DbTx, entryUUID uuid.UUID, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listTelescopeEntryTagsByEntrySQL, entryUUID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list telescope_entry_tags: %w", err)

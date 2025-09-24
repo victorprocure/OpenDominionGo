@@ -1,0 +1,24 @@
+package shared
+
+type NavItem struct {
+	Title string
+	Link  string
+    NewWindow bool
+    Selected bool
+}
+
+templ NavItems(navItems []NavItem) {
+    for _, navItem := range navItems {
+        <div class="hover:text-slate-400 relative flex flex-row items-center">
+            if navItem.NewWindow {
+                <a href={ navItem.Link } target="_blank" rel="noopener noreferrer">{ navItem.Title }</a>
+            } else {
+                if navItem.Selected {
+                    <a class="font-semibold text-slate-400">{ navItem.Title }</a>
+                } else {
+                    <a href={ navItem.Link }>{ navItem.Title }</a>
+                }
+            }
+        </div>
+    }
+}

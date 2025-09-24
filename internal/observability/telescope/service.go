@@ -1,29 +1,30 @@
 package telescope
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"log/slog"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/victorprocure/opendominiongo/internal/config"
 	telentry "github.com/victorprocure/opendominiongo/internal/repositories/telescope/entry"
 	teltag "github.com/victorprocure/opendominiongo/internal/repositories/telescope/entry/tag"
 )
 
-type Service struct {
+type service struct {
 	db      *sql.DB
 	entries *telentry.Repo
 	tags    *teltag.Repo
 	log     *slog.Logger
 }
 
-func NewService(db *sql.DB, log *slog.Logger) *Service {
-	return &Service{
+func NewService(db *sql.DB, cfg *config.AppConfig) Service {
+	return &service{
 		db:      db,
-		entries: telentry.NewRepo(db, log),
-		tags:    teltag.NewRepo(db, log),
-		log:     log,
+		entries: telentry.NewRepo(db, cfg.Log),
+		tags:    teltag.NewRepo(db, cfg.Log),
+		log:     cfg.Log,
 	}
 }
 
@@ -44,7 +45,7 @@ func WithTags(tags ...string) Option {
 }
 
 // Capture serializes content as JSON and stores a telescope entry with optional tags.
-func (s *Service) Capture(ctx context.Context, typ string, content any, opts ...Option) (int64, error) {
+func (s *service) Capture(ctx *gin.Context, typ string, content any, opts ...Option) (int64, error) {
 	var co CaptureOptions
 	for _, fn := range opts {
 		fn(&co)

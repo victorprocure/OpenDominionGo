@@ -1,0 +1,18 @@
+package login
+
+type LoginRibbonOpts struct {
+    LoggedIn bool
+    Username string
+    AvatarURL string
+}
+
+templ LoginRibbon(opts LoginRibbonOpts) {
+    <div class="flex flex-row items-center gap-3 lg:gap-10">
+    if opts.LoggedIn {
+
+    } else {
+        <div class="hover:text-slate-400">Register</div>
+        <div class="hover:text-slate-400">Login</div>
+    }
+    </div>
+}

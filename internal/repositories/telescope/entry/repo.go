@@ -1,12 +1,12 @@
 package entry
 
 import (
-	"context"
 	"database/sql"
 	_ "embed"
 	"fmt"
 	"log/slog"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/victorprocure/opendominiongo/internal/repositories"
 )
@@ -36,7 +36,7 @@ type CreateArgs struct {
 	Content              string
 }
 
-func (r *Repo) CreateContext(ctx context.Context, tx repositories.DbTx, a CreateArgs) (int64, error) {
+func (r *Repo) CreateContext(ctx *gin.Context, tx repositories.DbTx, a CreateArgs) (int64, error) {
 	var sequence int64
 	if err := tx.QueryRowContext(ctx, insertTelescopeEntrySQL, a.UUID, a.BatchID, a.FamilyHash, a.ShouldDisplayOnIndex, a.Type, a.Content).Scan(&sequence); err != nil {
 		return 0, fmt.Errorf("insert telescope_entry: %w", err)
@@ -54,7 +54,7 @@ type Row struct {
 	Content              string
 }
 
-func (r *Repo) GetBySequenceContext(ctx context.Context, tx repositories.DbTx, sequence int64) (*Row, error) {
+func (r *Repo) GetBySequenceContext(ctx *gin.Context, tx repositories.DbTx, sequence int64) (*Row, error) {
 	var x Row
 	if err := tx.QueryRowContext(ctx, getTelescopeEntryBySequenceSQL, sequence).
 		Scan(&x.Sequence, &x.UUID, &x.BatchID, &x.FamilyHash, &x.ShouldDisplayOnIndex, &x.Type, &x.Content); err != nil {
@@ -66,7 +66,7 @@ func (r *Repo) GetBySequenceContext(ctx context.Context, tx repositories.DbTx, s
 	return &x, nil
 }
 
-func (r *Repo) ListByTypeContext(ctx context.Context, tx repositories.DbTx, typ string, limit, offset int) ([]Row, error) {
+func (r *Repo) ListByTypeContext(ctx *gin.Context, tx repositories.DbTx, typ string, limit, offset int) ([]Row, error) {
 	rows, err := tx.QueryContext(ctx, listTelescopeEntriesByTypeSQL, typ, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("list telescope_entries: %w", err)

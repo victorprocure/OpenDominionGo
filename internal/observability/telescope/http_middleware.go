@@ -4,9 +4,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/victorprocure/opendominiongo/internal/middleware"
 )
+
+type Service interface {
+	HTTPMiddleware() gin.HandlerFunc
+}
 
 type responseRecorder struct {
 	http.ResponseWriter
@@ -29,28 +34,26 @@ func (rw *responseRecorder) Write(b []byte) (int, error) {
 }
 
 // HTTPMiddleware captures request/response metadata as a telescope entry.
-func (s *Service) HTTPMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (s *service) HTTPMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		start := time.Now()
-		rr := &responseRecorder{ResponseWriter: w}
 		batchID := uuid.New()
-		next.ServeHTTP(rr, r)
 
-		reqID := middleware.GetRequestID(r.Context())
+		reqID := middleware.GetRequestID(c)
 		content := map[string]any{
-			"method":      r.Method,
-			"path":        r.URL.Path,
-			"status":      rr.status,
+			"method":      c.Request.Method,
+			"path":        c.Request.URL.Path,
+			"status":      c.Request.Response.Status,
 			"duration_ms": time.Since(start).Milliseconds(),
-			"size":        rr.size,
-			"remote_addr": r.RemoteAddr,
-			"user_agent":  r.Header.Get("User-Agent"),
+			"size":        c.Writer.Size(),
+			"remote_addr": c.Request.RemoteAddr,
+			"user_agent":  c.GetHeader("User-Agent"),
 			"request_id":  reqID,
 		}
-		tags := []string{"http", "method:" + r.Method, "status:" + http.StatusText(rr.status)}
+		tags := []string{"http", "method:" + c.Request.Method, "status:" + c.Request.Response.Status}
 		if reqID != "" {
 			tags = append(tags, "request-id:"+reqID)
 		}
-		_, _ = s.Capture(r.Context(), "request", content, WithBatchID(batchID), WithDisplayOnIndex(true), WithTags(tags...))
-	})
+		_, _ = s.Capture(c, "request", content, WithBatchID(batchID), WithDisplayOnIndex(true), WithTags(tags...))
+	}
 }
