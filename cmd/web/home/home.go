@@ -9,7 +9,7 @@ import (
 var path = "/"
 
 func RegisterRoutes(r *gin.Engine) {
-	r.GET(path, func(c *gin.Context){
+	r.GET(path, func(c *gin.Context) {
 		homeWebHandler(c.Writer, c.Request)
 	})
 }

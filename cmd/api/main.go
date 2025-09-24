@@ -86,7 +86,7 @@ func main() {
 		slog.String("db_name", cfg.DBName),
 		slog.String("sslmode", cfg.DBSSLMode),
 	)
-	
+
 	err = httpServer.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		panic(fmt.Sprintf("http server error: %s", err))
@@ -94,5 +94,4 @@ func main() {
 
 	<-done
 	log.Info("graceful shutdown complete")
-
 }

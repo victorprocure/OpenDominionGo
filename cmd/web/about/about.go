@@ -9,7 +9,7 @@ import (
 var path = "/about"
 
 func RegisterRoutes(r *gin.Engine) {
-	r.GET(path, func(c *gin.Context){
+	r.GET(path, func(c *gin.Context) {
 		aboutWebHandler(c.Writer, c.Request)
 	})
 }
@@ -22,4 +22,3 @@ func aboutWebHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-

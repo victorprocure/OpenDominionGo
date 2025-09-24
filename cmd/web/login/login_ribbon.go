@@ -9,7 +9,7 @@ import (
 var path = "/loadLoginRibbon"
 
 func RegisterRoutes(r *gin.Engine) {
-	r.GET(path, func(c *gin.Context){
+	r.GET(path, func(c *gin.Context) {
 		loginRibbonWebHandler(c.Writer, c.Request)
 	})
 }

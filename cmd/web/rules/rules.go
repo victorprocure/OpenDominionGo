@@ -9,7 +9,7 @@ import (
 var path = "/rules"
 
 func RegisterRoutes(r *gin.Engine) {
-	r.GET(path, func(c *gin.Context){
+	r.GET(path, func(c *gin.Context) {
 		rulesWebHandler(c.Writer, c.Request)
 	})
 }

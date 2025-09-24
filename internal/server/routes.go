@@ -19,7 +19,7 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.New()
 	r.Use(middleware.WithRequestID())
-	//r.Use(s.deps.Telescope.HTTPMiddleware())
+	// r.Use(s.deps.Telescope.HTTPMiddleware())
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", s.cfg.AppPort)},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -37,7 +37,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	login.RegisterRoutes(r)
 	rules.RegisterRoutes(r)
 	shared.RegisterRoutes(r)
-	
+
 	return r
 }
 

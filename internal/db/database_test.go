@@ -68,14 +68,14 @@ func TestMain(m *testing.M) {
 }
 
 func TestNew(t *testing.T) {
-	srv, _ := New(&config.AppConfig { DBUser: username, DBPassword: password, DBName: database, DBHost: host, })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host})
 	if srv == nil {
 		t.Fatal("New() returned nil")
 	}
 }
 
 func TestHealth(t *testing.T) {
-	srv, _ := New(&config.AppConfig { DBUser: username, DBPassword: password, DBName: database, DBHost: host, })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host})
 
 	stats := srv.Health()
 
@@ -93,7 +93,7 @@ func TestHealth(t *testing.T) {
 }
 
 func TestClose(t *testing.T) {
-	srv, _ := New(&config.AppConfig { DBUser: username, DBPassword: password, DBName: database, DBHost: host, })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host})
 
 	if srv.Close() != nil {
 		t.Fatalf("expected Close() to return nil")

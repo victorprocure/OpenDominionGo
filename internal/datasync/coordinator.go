@@ -16,8 +16,8 @@ type SyncCoordinator interface {
 
 // SyncCoordinator runs a set of Syncers inside DB transactions.
 type syncCoordinator struct {
-	DB  *sql.DB
-	Log *slog.Logger
+	DB      *sql.DB
+	Log     *slog.Logger
 	syncers []Syncer
 }
 
@@ -47,7 +47,7 @@ func (c *syncCoordinator) RunAll(ctx context.Context) error {
 }
 
 func (c *syncCoordinator) createAll() {
-	syncers := []Syncer {
+	syncers := []Syncer{
 		NewTechSync(c.DB, c.Log),
 		NewRacesSync(c.DB, c.Log),
 		NewSpellsSync(c.DB, c.Log),
