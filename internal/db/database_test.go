@@ -70,7 +70,7 @@ func TestMain(m *testing.M) {
 
 func TestNew(t *testing.T) {
 	p, _ := strconv.Atoi(port)
-	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", DBMaxOpenConns: 10, DBMaxIdleConns:  10, DBConnMaxLifetime:  time.Minute * 5, DBConnMaxIdleTime: time.Minute * 5, })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", DBMaxOpenConns: 10, DBMaxIdleConns: 10, DBConnMaxLifetime: time.Minute * 5, DBConnMaxIdleTime: time.Minute * 5})
 	if srv == nil {
 		t.Fatal("New() returned nil")
 	}
@@ -78,7 +78,7 @@ func TestNew(t *testing.T) {
 
 func TestHealth(t *testing.T) {
 	p, _ := strconv.Atoi(port)
-	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", DBMaxOpenConns: 10, DBMaxIdleConns:  10, DBConnMaxLifetime:  time.Minute * 5, DBConnMaxIdleTime: time.Minute * 5, })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", DBMaxOpenConns: 10, DBMaxIdleConns: 10, DBConnMaxLifetime: time.Minute * 5, DBConnMaxIdleTime: time.Minute * 5})
 	stats := srv.Health()
 
 	if stats["status"] != "up" {
@@ -96,7 +96,7 @@ func TestHealth(t *testing.T) {
 
 func TestClose(t *testing.T) {
 	p, _ := strconv.Atoi(port)
-	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", DBMaxOpenConns: 10, DBMaxIdleConns:  10, DBConnMaxLifetime:  time.Minute * 5, DBConnMaxIdleTime: time.Minute * 5, })
+	srv, _ := New(&config.AppConfig{DBUser: username, DBPassword: password, DBName: database, DBHost: host, DBPort: p, DBSSLMode: "disable", DBMaxOpenConns: 10, DBMaxIdleConns: 10, DBConnMaxLifetime: time.Minute * 5, DBConnMaxIdleTime: time.Minute * 5})
 	if srv.Close() != nil {
 		t.Fatalf("expected Close() to return nil")
 	}
